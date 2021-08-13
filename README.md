@@ -24,5 +24,5 @@
 8.前端暂不提供对sakila和mongoDB的搜索，仅提供了文档的全文检索，要使用数据库的搜索，请进入solr控制台查看效果。
 
 效果图：
- ![alt text](https://github.com/shenzhanwang/Spring-solr/blob/master/1.png)
- ![alt text](https://github.com/shenzhanwang/Spring-solr/blob/master/2.jpg)
+ ![输入图片说明](http://git.oschina.net/uploads/images/2016/1116/080927_551753d6_1110335.png "在这里输入图片标题")
+![输入图片说明](http://git.oschina.net/uploads/images/2016/1116/080940_39753846_1110335.jpeg "在这里输入图片标题")
