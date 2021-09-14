@@ -16,3 +16,5 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
     - 通配符查询：wildcardQuery
 5. 文本分词使用了IK分词器：https://github.com/medcl/elasticsearch-analysis-ik
 6. swagger入口：http://localhost:8080/swagger-ui.html
+### 效果图
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0802/161859_ea43de26_1110335.png "QQ截图20190802161813.png")
