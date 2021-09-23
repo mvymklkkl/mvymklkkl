@@ -4,8 +4,9 @@
 Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特性：
 
 1. 全文检索的实现主要包括构建索引、高级搜索、文本分词三个模块；
-2. 索引的构建使用增量更新，当数据库的原始数据发生修改、删除和新增时，把对应的变更在elastic search的索引中要响应地操作一次；
-3. 使用spring-boot-starter-data-elasticsearch来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果
+2. 索引的构建使用增量更新，当数据库的原始数据发生修改、删除和新增时，把对应的变更在elastic search的索引中要相应地操作一次；
+3. 使用spring-boot-starter-data-elasticsearch来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。当构建索引和搜索时，都需要经过“分析”，而分词是分析的一个环节。
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/082846_8cf33cda_1110335.png "微信截图_20190805082826.png")
 4. 高级搜索实现了以下几种：
     - 普通查询,先分词再精准搜索：matchQuery
     - 精准查询,不分词直接搜索：termQuery
