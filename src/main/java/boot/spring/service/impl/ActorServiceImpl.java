@@ -105,16 +105,8 @@ public class ActorServiceImpl implements ActorService{
 	}
 
 	@Override
-	public void indexActors(List<ActorIndex> actors) {
-		actorRepository.saveAll(actors);
-	}
-	@Override
 	public List<Actor> getActors() {
 		return actorMapper.getAllactors();
 	}
 
-	@Override
-	public void indexSougoulogs(List<SougoulogIndex> logs) {
-		sougoulogRepository.saveAll(logs);
-	}
 }

@@ -109,25 +109,6 @@ public class ActorController {
 		return "showactor";
 	}
 	
-	@ApiOperation("批量添加索引文档")
-	@RequestMapping(value="/index/actors",method = RequestMethod.GET)
-	@ResponseBody
-	public MSG indexActors(){
-		List<Actor> list = actorservice.getActors();
-		List<ActorIndex> indexes = new ArrayList<ActorIndex>();
-		indexes =list.stream().map(a->{
-			ActorIndex index = new ActorIndex();
-			index.setId(a.getId());
-			index.setFirstName(a.getFirst_name());
-			index.setLastName(a.getLast_name());
-			String dates = a.getLast_update();
-			index.setLastUpdate(dates.substring(0, 10));
-			return index;
-		}).collect(Collectors.toList());
-		actorservice.indexActors(indexes);
-		return new MSG("index success");
-	}	
-	
 	@Autowired
 	SougoulogMapper sougoulogMapper;
 	
@@ -152,26 +133,7 @@ public class ActorController {
 		return new MSG("import success");
 	}		
 	
-	@ApiOperation("批量添加日志索引文档")
-	@RequestMapping(value="/index/sougoulog",method = RequestMethod.GET)
-	@ResponseBody
-	public MSG indexSougous(){
-		List<Sougoulog> list = sougoulogMapper.listSougoulogs();
-		List<SougoulogIndex> indexes = new ArrayList<SougoulogIndex>();
-		indexes =list.stream().map(a->{
-			SougoulogIndex index = new SougoulogIndex();
-			index.setId(a.getId());
-			index.setVisittime(a.getVisittime());
-			index.setUserid(a.getUserid());
-			index.setKeywords(a.getKeywords());
-			index.setRank(a.getRank());
-			index.setClicknum(a.getClicknum());
-			index.setUrl(a.getUrl());
-			return index;
-		}).collect(Collectors.toList());
-		actorservice.indexSougoulogs(indexes);
-		return new MSG("index success");
-	}		
+
 	
 	
 }

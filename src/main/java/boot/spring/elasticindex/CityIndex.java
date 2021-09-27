@@ -1,5 +1,8 @@
 package boot.spring.elasticindex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -34,5 +37,16 @@ public class CityIndex {
 		this.lastupdate = lastupdate;
 	}
 	
-	
+	public static void main(String[] args) throws Exception {
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		list.add(1);
+		list.add(2);
+		list.add(3);
+		list.add(4);
+		list.add(5);
+		List<Integer> tmp = list.subList(1, 3);
+		list.stream().forEach(a->System.out.print(a));
+//		tmp.stream().forEach(a->System.out.println(a));
+	}
+
 }

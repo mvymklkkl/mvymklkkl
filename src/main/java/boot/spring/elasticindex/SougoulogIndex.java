@@ -14,7 +14,7 @@ public class SougoulogIndex {
 	private String visittime;
 	@Field(type = FieldType.Text)
 	private String userid;
-	@Field(type = FieldType.Text, analyzer = "ik_max_word")
+	@Field(type = FieldType.Text, analyzer = "ik_smart")
 	private String keywords;
 	@Field(type = FieldType.Integer)
 	private Integer rank;

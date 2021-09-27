@@ -1,0 +1,35 @@
+# search
+GET sougoulog/_search
+{
+  "query": {
+    "match": {
+      "keywords": {
+        "query": "国无",
+        "operator": "and"
+      }
+    }
+  },
+  "from": 0,
+  "size": 115
+}
+
+# analyze
+POST sougoulog/_analyze
+{"analyzer" : "standard",  "text" : "国无"}
+
+POST sougoulog/_analyze
+{"analyzer" : "ik_max_word",  "text" : "中华人民共和国"}
+
+POST sougoulog/_analyze
+{"analyzer" : "ik_smart",  "text" : "中华人民共和国治安管理处罚法"}
+
+# 查询一个文档的词条向量
+GET sougoulog/docs/35/_termvectors
+{
+  "fields" : ["keywords","userid"],
+  "offsets" : true,
+  "payloads" : true,
+  "positions" : true,
+  "term_statistics" : true,
+  "field_statistics" : true
+}
