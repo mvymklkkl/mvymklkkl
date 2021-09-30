@@ -2,6 +2,15 @@
 GET sougoulog/_search
 {
   "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 10
+}
+
+GET sougoulog/_search
+{
+  "query": {
     "match": {
       "keywords": {
         "query": "国无",
@@ -32,4 +41,81 @@ GET sougoulog/docs/35/_termvectors
   "positions" : true,
   "term_statistics" : true,
   "field_statistics" : true
+}
+
+# aggregations
+# 度量聚集，查看统计数据
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+    "stats": {
+      "field": "rank"
+    }
+    }
+    
+  }
+}
+# terms词条聚集，相当于在字段上group by，不能用于有分词字段的统计
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+      "terms": {
+                "field": "visittime" ,
+                "size": 100 ,
+                "order": {
+                  "_term": "asc"
+                }
+      
+      },
+      "aggs": {  
+                "sum_rank": {
+                    "stats": {
+                        "field": "rank"
+                    }
+                }
+      }
+    }
+  }
+}
+# 时间范围聚集date_range，区间左闭右开
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+      "date_range": {
+                "field": "visittime" ,
+                "ranges": [
+                  {
+                    "to":"00:03:00"
+                  },{
+                    "from": "00:03:00",
+                    "to":"00:06:00"
+                  },{
+                    "from": "00:06:00",
+                    "to":"00:09:00"
+                  },
+                  {
+                    "from": "00:09:00"
+                  }
+                ]
+      }
+    }
+  }
 }

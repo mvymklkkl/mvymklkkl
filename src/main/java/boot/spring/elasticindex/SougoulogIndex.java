@@ -1,7 +1,9 @@
 package boot.spring.elasticindex;
 
 
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -10,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class SougoulogIndex {
 	@Id
 	private Integer id;
-	@Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Date, format = DateFormat.hour_minute_second)
 	private String visittime;
 	@Field(type = FieldType.Text)
 	private String userid;
