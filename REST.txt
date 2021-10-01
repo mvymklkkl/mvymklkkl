@@ -119,3 +119,37 @@ GET sougoulog/_search
     }
   }
 }
+# 直方图聚集，直接传步长，不需要传区间段，interval单位是毫秒
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+      "histogram": {
+                "field": "visittime" ,
+                "interval": 180000
+      }
+    }
+  }
+}
+# 日期直方图聚集，直接传步长，不需要传区间段，interval单位是分钟
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+      "date_histogram": {
+                "field": "visittime" ,
+                "interval": "3m"
+      }
+    }
+  }
+}
