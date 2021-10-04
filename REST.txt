@@ -153,3 +153,32 @@ GET sougoulog/_search
     }
   }
 }
+# 嵌套聚集，top_hits用于返回父聚集的前N名
+GET sougoulog/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0,
+  "size": 0,
+  "aggs":{
+    "countnumber":{
+      "date_histogram": {
+                "field": "visittime" ,
+                "interval": "3m"
+      },
+      "aggs":{
+        "details":{
+          "top_hits": {
+            "size": 3,
+            "sort": [{
+              "visittime": {
+                "order": "asc"
+              }
+            }]
+          }
+        }
+      }
+    }
+  }
+}
