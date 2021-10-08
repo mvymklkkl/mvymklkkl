@@ -1,6 +1,8 @@
 package boot.spring.controller;
 
 
+import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import boot.spring.elasticindex.ActorIndex;
+import boot.spring.elasticindex.ShopIndex;
 import boot.spring.elasticindex.SougoulogIndex;
+import boot.spring.pagemodel.QueryCommand;
 import boot.spring.pagemodel.SougoulogSearchRequest;
 import boot.spring.repository.ActorRepository;
+import boot.spring.repository.ShopRepository;
 import boot.spring.repository.SougoulogRepository;
 import boot.spring.service.SougoulogSearchService;
 import io.swagger.annotations.Api;
@@ -36,6 +41,9 @@ public class SearchController {
 	
 	@Autowired
 	SougoulogSearchService sougoulogSearchService;
+	
+	@Autowired
+	ShopRepository shopRepository;
 	
 	@ApiOperation("多字段查询")
 	@RequestMapping(value="/multi_match",method = RequestMethod.POST)
@@ -113,7 +121,7 @@ public class SearchController {
 	    Page<SougoulogIndex> result = sougoulogRepository.search(queryBuilder.build());
 		return result;
 	}
-	
+
 	@ApiOperation("布尔查询,使用布尔运算组合多个查询条件")
 	@RequestMapping(value="/boolQuery",method = RequestMethod.GET)
 	@ResponseBody
@@ -173,4 +181,19 @@ public class SearchController {
 		return result;
 	}
 	
+	@ApiOperation("经纬度搜索")
+	@RequestMapping(value="/locationQuery",method = RequestMethod.POST)
+	@ResponseBody
+	public Page<ShopIndex> locationQuery(@RequestBody QueryCommand q){
+		 // 构建查询条件
+		GeoDistanceQueryBuilder distanceQueryBuilder = new GeoDistanceQueryBuilder("location");
+	     // 以某点为中心，搜索指定范围
+		distanceQueryBuilder.point(39.96820,116.4107);
+		 // 定义查询单位：公里
+		distanceQueryBuilder.distance(q.getD(), DistanceUnit.KILOMETERS);
+		NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+		queryBuilder.withFilter(distanceQueryBuilder);
+		Page<ShopIndex> result = shopRepository.search(queryBuilder.build());
+		return result;
+	}	
 }
