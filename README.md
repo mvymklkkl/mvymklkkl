@@ -4,7 +4,7 @@
 Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特性：
 
 1. 全文检索的实现主要包括构建索引、高级搜索、文本分词三个模块；
-2. 索引的构建使用增量更新，当数据库的原始数据发生修改、删除和新增时，把对应的变更在elastic search的索引中要相应地操作一次；
+2. 索引的构建有增量更新和全量更新，一般第一次全量更新，以后增量更新；
 3. 使用spring-boot-starter-data-elasticsearch来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。当构建索引和搜索时，都需要经过“分析”，而分词是分析的一个环节。
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/082846_8cf33cda_1110335.png "微信截图_20190805082826.png")
 4. 高级搜索实现了以下几种：
@@ -15,6 +15,9 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
     - 范围查询：rangeQuery
     - 前缀查询：prefixQuery
     - 通配符查询：wildcardQuery
+    - 多字段搜索,指定多个字段进行搜索:multi_match 
+    - 全字段搜索，es自带的全字段搜索:query_string 
+    - 经纬度搜索:distanceQuery
 5. 文本分词使用了IK分词器：https://github.com/medcl/elasticsearch-analysis-ik
 6. 原始数据提交到倒排索引中以前，es可以对原始数据进行一系列的转换操作，这个过程叫做分析。一个完整的分析过程，要经过大于等于0个字符过滤器，一个分词器，大于等于0个分词过滤器组成。在搜索的时候，根据搜索方法的不同也可以选择是否进行经过分析过程。通常match搜索要经过分析，term搜索则不用。
 
@@ -22,7 +25,8 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 
 7. swagger入口：http://localhost:8080/swagger-ui.html
 ### 效果图
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0802/161859_ea43de26_1110335.png "QQ截图20190802161813.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0812/114854_6715f7c0_1110335.png "QQ截图20190812114810.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0812/114903_bf22e6dd_1110335.png "QQ截图20190812114831.png")
 ### 附录：个人作品索引目录（持续更新）
 
 #### 基础篇:职业化，从做好OA系统开始
