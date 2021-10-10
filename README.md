@@ -18,6 +18,7 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
     - 多字段搜索,指定多个字段进行搜索:multi_match 
     - 全字段搜索，es自带的全字段搜索:query_string 
     - 经纬度搜索:distanceQuery
+    - 日期分面搜索,使用聚集实现，统计每个区间文档的数目:dateHistogramAggregation
 5. 文本分词使用了IK分词器：https://github.com/medcl/elasticsearch-analysis-ik
 6. 原始数据提交到倒排索引中以前，es可以对原始数据进行一系列的转换操作，这个过程叫做分析。一个完整的分析过程，要经过大于等于0个字符过滤器，一个分词器，大于等于0个分词过滤器组成。在搜索的时候，根据搜索方法的不同也可以选择是否进行经过分析过程。通常match搜索要经过分析，term搜索则不用。
 
