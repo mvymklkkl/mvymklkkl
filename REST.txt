@@ -13,9 +13,10 @@ GET sougoulog/_search
   "query": {
     "match": {
       "keywords": {
-        "query": "国无",
-        "operator": "and"
-      }
+        "query": "无",
+        "operator": "and",
+        "boost": 2
+        }
     }
   },
   "from": 0,
@@ -38,7 +39,7 @@ GET sougoulog/_search
     "multi_match": {
       "query": "全国",
       "analyzer": "ik_smart", 
-      "fields": ["userid","url","keywords"]
+      "fields": ["userid","url","keywords^2"]
     }
   }, 
   "from": 0,
