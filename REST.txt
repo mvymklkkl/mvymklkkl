@@ -1,5 +1,5 @@
-# search
-POST sougoulog/_search
+# search 搜索所有
+POST _all/_search
 {
   "query": {
     "match_all": {}

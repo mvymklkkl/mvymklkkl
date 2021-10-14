@@ -1,6 +1,8 @@
 package boot.spring.controller;
 
 
+import java.util.HashMap;
+
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -11,16 +13,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 import boot.spring.elasticindex.ActorIndex;
 import boot.spring.elasticindex.ShopIndex;
 import boot.spring.elasticindex.SougoulogIndex;
 import boot.spring.pagemodel.QueryCommand;
+import boot.spring.pagemodel.ResultResponse;
 import boot.spring.pagemodel.SougoulogSearchRequest;
 import boot.spring.repository.ActorRepository;
 import boot.spring.repository.ShopRepository;
@@ -48,22 +55,37 @@ public class SearchController {
 	@ApiOperation("多字段查询")
 	@RequestMapping(value="/multi_match",method = RequestMethod.POST)
 	@ResponseBody
-	public Page<SougoulogIndex> multi_match(@RequestBody SougoulogSearchRequest request) {
-		// 如果关键词为空，则返回所有
-		String content = request.getQuery().getKeyWords();
-		Integer rows = request.getQuery().getRows();
-		if (rows == null || rows == 0) {
-			rows = 10;
-		}
-		Integer start = request.getQuery().getStart();
-		int pagenum = start / rows;
-		// 第几页，页面大小
-		Pageable pageable = PageRequest.of(pagenum, rows);
-		if (content == null || "".equals(content)) {
-			return sougoulogSearchService.searchDefault(request, pageable);
-		} else {
-			return sougoulogSearchService.searchResult(request, pageable);
-		}
+	public ResponseEntity<ResultResponse> multi_match(@RequestBody SougoulogSearchRequest request) {
+		try {
+			Page<SougoulogIndex> page;
+			// 如果关键词为空，则返回所有
+			String content = request.getQuery().getKeyWords();
+			Integer rows = request.getQuery().getRows();
+			if (rows == null || rows == 0) {
+				rows = 10;
+			}
+			Integer start = request.getQuery().getStart();
+			int pagenum = start / rows;
+			// 第几页，页面大小
+			Pageable pageable = PageRequest.of(pagenum, rows);
+			if (content == null || "".equals(content)) {
+				page = sougoulogSearchService.searchDefault(request, pageable);
+			} else {
+				page = sougoulogSearchService.searchResult(request, pageable);
+			}
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("result", page);
+			ResultResponse rep = new ResultResponse(HttpStatus.OK, 200, "查询成功", "请求成功", map);
+			return new ResponseEntity<ResultResponse>(rep, HttpStatus.OK); 
+		} catch (HttpMessageNotReadableException hex) {
+			hex.printStackTrace();
+			ResultResponse rep = new ResultResponse(HttpStatus.BAD_REQUEST, 400, "请求格式错误","请求失败", null);
+			return new ResponseEntity<ResultResponse>(rep, HttpStatus.BAD_REQUEST);
+		}  catch (Exception e) {
+			e.printStackTrace();
+			ResultResponse rep = new ResultResponse(HttpStatus.BAD_REQUEST, 500, "后台错误", "请求失败", null);
+			return new ResponseEntity<ResultResponse>(rep, HttpStatus.BAD_REQUEST);
+        }
 	}	
 
 	@ApiOperation("query_string全字段查找")
