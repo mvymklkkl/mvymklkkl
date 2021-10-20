@@ -31,6 +31,13 @@ POST sougoulog/_search
       "analyzer": "ik_max_word", 
       "fields": ["userid","keywords","url"]
     }
+  },
+  "post_filter": {
+    "range": {
+      "rank": {
+        "gte": 3
+      }
+  }
   }
 }
 
