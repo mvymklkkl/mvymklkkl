@@ -1,3 +1,18 @@
+# 创建索引
+PUT indexname
+
+# 给索引添加映射
+PUT /index/fulltext/_mapping
+{
+  "properties": {
+    "content": {
+      "type": "text",
+      "analyzer": "ik_smart",
+      "search_analyzer": "ik_smart"
+    }
+  }
+}
+
 # search 搜索所有
 POST sougoulog/_search
 {
