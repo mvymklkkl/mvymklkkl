@@ -42,8 +42,8 @@ POST sougoulog/_search
 {
   "query": {
     "query_string": {
-      "query": "国家电网的财产安全十分重要", 
-      "analyzer": "ik_max_word", 
+      "query": "美国", 
+      "analyzer": "ik_smart", 
       "fields": ["userid","keywords","url"]
     }
   },
