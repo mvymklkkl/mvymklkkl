@@ -265,3 +265,9 @@ POST sougoulog/_search
     }
   }
 }
+
+# sql查询
+POST _xpack/sql?format=txt
+{
+  "query": "select * from sougoulog where id=100"
+}
