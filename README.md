@@ -30,6 +30,27 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
   同一个分片，查询时需要将文档进行连接，效率低于嵌套，但是修改文档时索引不用重建。
 - 反规范化通过复制数据来避免表连接，但是需要更多空间。反规范化是唯一能用于解决多对多的表关系，可以将多对多转化为多个
   一对多。由于数据被复制，导致聚集和查询计算结果拥有重复数据导致结果不准确。
+### 集群搭建
+我们在centos7搭建一个三台机器的elastic search集群，ip分别为172.16.3.151，172.16.3.152，172.16.3.153.
+1. 关闭防火墙和selinux
+2. 下载rpm包，运行rpm -ivh elasticsearch-6.8.1
+3. 修改每个节点的elasticsearch.yml，在/etc/elasticsearch目录下
+
+```
+cluster.name: wsz
+# 节点名，根据节点的不同给与不同名字
+node.name: hadoop1
+# 根据节点的实际ip填写
+network.host: 172.16.3.151
+# 节点的ip列表
+discovery.zen.ping.unicast.hosts: ["172.16.3.151", "172.16.3.152", "172.16.3.153"]
+# 控制集群在达到多少个节点之后才会开始复制分片，一般为集群节点数目
+gateway.recover_after_nodes: 3
+```
+4. 每个节点运行systemctl start elasticsearch.service
+5. 查看集群状态，访问http://172.16.3.151:9200/_cluster/state ，显示有三个节点，搭建成功。
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0814/152002_3517b712_1110335.png "微信截图_20190814151942.png")
+
 ### 效果图
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0812/114854_6715f7c0_1110335.png "QQ截图20190812114810.png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0812/114903_bf22e6dd_1110335.png "QQ截图20190812114831.png")
