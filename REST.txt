@@ -271,3 +271,12 @@ POST _xpack/sql?format=txt
 {
   "query": "select * from sougoulog where id=100"
 }
+
+# 集群状态
+GET _cluster/state
+
+GET _nodes/stats
+
+GET _cat/nodes
+
+GET _cat/allocation?v
