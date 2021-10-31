@@ -38,22 +38,64 @@ POST _all/_search
   "size": 115
 }
 
+# query_string多字段搜索
 POST sougoulog/_search
 {
   "query": {
-    "query_string": {
-      "query": "美国", 
-      "analyzer": "ik_smart", 
-      "fields": ["userid","keywords","url"]
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "美国",
+            "analyzer": "ik_smart",
+            "fields": [
+              "userid",
+              "keywords",
+              "url"
+            ]
+          }
+        },
+        {
+          "range": {
+            "visittime": {
+              "gte": "00:00:10",
+              "lte": "00:55:55"
+            }
+          }
+        },
+        {
+          "term": {
+            "userid": {
+              "value": "09215584418987899"
+            }
+          }
+        },
+        {
+          "fuzzy": {
+            "userid": {
+              "value": "092155844189878"
+            }
+          }
+        }
+      ]
     }
   },
-  "post_filter": {
-    "range": {
-      "rank": {
-        "gte": 3
+  "from": 0,
+  "size": 10
+}
+# 模糊搜索
+POST sougoulog/_search
+{
+  "query": 
+    {
+      "fuzzy": {
+        "userid": {
+          "value": "007177259245828"
+        }
       }
-  }
-  }
+    },
+  "from": 0,
+  "size": 10
 }
 
 #布尔查询，可根据多条件搜索，取代以前的过滤功能
