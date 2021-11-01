@@ -48,6 +48,7 @@ POST sougoulog/_search
           "query_string": {
             "query": "美国",
             "analyzer": "ik_smart",
+            "default_operator": "OR", 
             "fields": [
               "userid",
               "keywords",
