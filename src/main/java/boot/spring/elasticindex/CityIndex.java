@@ -1,14 +1,14 @@
 package boot.spring.elasticindex;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "city",type = "docs", shards = 1, replicas = 0)
+
+@Document(indexName = "city",type = "citydocs", shards = 3, replicas = 1)
 public class CityIndex {
 	@Id
 	private short cityid;
@@ -16,8 +16,12 @@ public class CityIndex {
 	@Field(type = FieldType.Keyword)
 	private String city;
 	// 日期类型
-	@Field(type = FieldType.Date)
+	@Field(type = FieldType.Date, format=DateFormat.date_hour_minute_second)
 	private String lastupdate;
+	// 构建父子关系
+	@Field(type=FieldType.Integer)
+	private Short country_id;
+	
 	public short getCityid() {
 		return cityid;
 	}
@@ -36,17 +40,10 @@ public class CityIndex {
 	public void setLastupdate(String lastupdate) {
 		this.lastupdate = lastupdate;
 	}
-	
-	public static void main(String[] args) throws Exception {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		list.add(1);
-		list.add(2);
-		list.add(3);
-		list.add(4);
-		list.add(5);
-		List<Integer> tmp = list.subList(1, 3);
-		list.stream().forEach(a->System.out.print(a));
-//		tmp.stream().forEach(a->System.out.println(a));
+	public Short getCountry_id() {
+		return country_id;
 	}
-
+	public void setCountry_id(Short country_id) {
+		this.country_id = country_id;
+	}
 }

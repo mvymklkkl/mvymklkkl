@@ -1,10 +1,11 @@
 package boot.spring.po;
 
+import java.util.Date;
 
 public class City {
 	private short cityid;
 	private String city;
-	private String lastupdate;
+	private Date lastupdate;
 	private Country country;
 	
 	public String getCity() {
@@ -25,10 +26,10 @@ public class City {
 	public void setCityid(short cityid) {
 		this.cityid = cityid;
 	}
-	public String getLastupdate() {
+	public Date getLastupdate() {
 		return lastupdate;
 	}
-	public void setLastupdate(String lastupdate) {
+	public void setLastupdate(Date lastupdate) {
 		this.lastupdate = lastupdate;
 	}
 }

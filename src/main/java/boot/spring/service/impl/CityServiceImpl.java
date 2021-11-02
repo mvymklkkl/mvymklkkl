@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import boot.spring.mapper.CityMapper;
+import boot.spring.mapper.CountryMapper;
 import boot.spring.po.City;
 import boot.spring.po.Country;
 import boot.spring.repository.CityRepository;
@@ -24,6 +25,9 @@ import com.github.pagehelper.PageHelper;
 public class CityServiceImpl implements CityService{
 	@Autowired
 	CityMapper citymapper;
+	
+	@Autowired
+	CountryMapper countryMapper;
 	
 	public List<City> getCitylist() {
 		List<City> l=citymapper.getCitys();
@@ -47,5 +51,9 @@ public class CityServiceImpl implements CityService{
 	public Country getCountryCitys(String Countryname) {
 		return citymapper.getCitysbyCountry(Countryname);
 	}
-	
+
+	@Override
+	public List<Country> listCountrys() {
+		return countryMapper.selectCountrys();
+	}
 }
