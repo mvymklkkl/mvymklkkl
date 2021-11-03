@@ -199,7 +199,12 @@ public class IndexController {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			String fdate = dateFormat.format(dates);
 			index.setLastupdate(fdate);
-			index.setCountry_id(a.getCountry().getCountry_id());
+			Country c = a.getCountry();
+			CountryIndex cindex = new CountryIndex();
+			cindex.setCountry_id(c.getCountry_id());
+			cindex.setCountry(c.getCountry());
+			cindex.setLast_update(dateFormat.format(c.getLast_update()));
+			index.setCountryIndex(cindex);
 			return index;
 		}).collect(Collectors.toList());
 		cityRepository.saveAll(indexes);

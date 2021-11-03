@@ -19,8 +19,8 @@ public class CityIndex {
 	@Field(type = FieldType.Date, format=DateFormat.date_hour_minute_second)
 	private String lastupdate;
 	// 构建父子关系
-	@Field(type=FieldType.Integer)
-	private Short country_id;
+	@Field(type=FieldType.Object)
+	private CountryIndex countryIndex;
 	
 	public short getCityid() {
 		return cityid;
@@ -40,10 +40,11 @@ public class CityIndex {
 	public void setLastupdate(String lastupdate) {
 		this.lastupdate = lastupdate;
 	}
-	public Short getCountry_id() {
-		return country_id;
+	public CountryIndex getCountryIndex() {
+		return countryIndex;
 	}
-	public void setCountry_id(Short country_id) {
-		this.country_id = country_id;
+	public void setCountryIndex(CountryIndex countryIndex) {
+		this.countryIndex = countryIndex;
 	}
+	
 }
