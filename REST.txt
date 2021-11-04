@@ -99,6 +99,19 @@ POST sougoulog/_search
   "size": 10
 }
 
+# 经纬度搜索
+POST shop/_search
+{
+  "query": {
+    "geo_distance": {
+      "distance": "100km",
+      "location": {
+        "lat": 39.96820,
+        "lon": 116.4107
+      }
+    }
+  }
+}
 #布尔查询，可根据多条件搜索，取代以前的过滤功能
 POST sougoulog/_search
 {
