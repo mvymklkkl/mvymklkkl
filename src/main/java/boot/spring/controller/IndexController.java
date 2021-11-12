@@ -35,7 +35,7 @@ public class IndexController {
         },
         "born": {
           "type": "date",
-          "format": "date_hour_minute_second"
+          "format": "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         },
         "desc": {
           "type": "text",
