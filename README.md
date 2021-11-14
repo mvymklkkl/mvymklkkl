@@ -51,6 +51,54 @@ gateway.recover_after_nodes: 3
 5. 查看集群状态，访问http://172.16.3.151:9200/_cluster/state ，显示有三个节点，搭建成功。
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0814/152002_3517b712_1110335.png "微信截图_20190814151942.png")
 
+### 索引数据的全量和增量更新
+更新索引数据可以通过调用es提供的API往里面灌数据，但是这样不够快。这里使用logstash向es的索引批量更新数据。
+### 安装logstash
+1. 下载对应的安装包，以WINDOWS为例，解压，打开根目录。
+2. 编辑Gemfile文件，修改软件源的地址为：source "https://gems.ruby-china.com/"
+3. 安装jdbc插件： .\logstash-plugin install --no-verify logstash-input-jdbc
+4. 编写jdbc.conf配置文件：
+
+```
+input {
+  jdbc {
+    jdbc_driver_library => "D:\\m2\\org\\postgresql\\postgresql\\9.4.1212\\postgresql-9.4.1212.jar"
+    jdbc_driver_class => "org.postgresql.Driver"
+    jdbc_connection_string => "jdbc:postgresql://ip:port/db"
+    jdbc_user => "xxx"
+    jdbc_password => "xxx"
+    jdbc_default_timezone => "Asia/Shanghai"
+  
+    statement => "SELECT sjdbh,ay,jjdwbh,scbjsj from t_sjd where sjc > :sql_last_value"
+    jdbc_paging_enabled => "true"
+    jdbc_page_size => "50000"
+    record_last_run => true
+    use_column_value => false
+    tracking_column => "sjc"
+    last_run_metadata_path => "./log"
+    schedule => "* * * * *"
+  }
+}
+
+filter {
+  
+}
+
+output {
+  stdout {
+    codec => rubydebug
+  }
+  elasticsearch {
+	hosts => "http://172.16.3.151:9200"
+    # index名
+    index => "sjd"
+    document_type=>"_doc"  
+  }
+}
+```
+5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf
+
+在以上配置中，sjc字段是数据的时间戳，每次查询大于时间戳的数据进行增量更新。schedule配置更新频率。
 ### 效果图
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0823/105906_0e51ea07_1110335.png "1.png")
