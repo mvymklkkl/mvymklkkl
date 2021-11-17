@@ -57,7 +57,7 @@ gateway.recover_after_nodes: 3
 1. 下载对应的安装包，以WINDOWS为例，解压，打开根目录。
 2. 编辑Gemfile文件，修改软件源的地址为：source "https://gems.ruby-china.com/"
 3. 安装jdbc插件： .\logstash-plugin install --no-verify logstash-input-jdbc
-4. 编写jdbc.conf配置文件：
+4. 编写全量导入的配置文件jdbc.conf：
 
 ```
 input {
@@ -65,22 +65,46 @@ input {
     jdbc_driver_library => "D:\\m2\\org\\postgresql\\postgresql\\9.4.1212\\postgresql-9.4.1212.jar"
     jdbc_driver_class => "org.postgresql.Driver"
     jdbc_connection_string => "jdbc:postgresql://192.168.52.229:8110/dsdb"
-    jdbc_user => "dsecs"
-    jdbc_password => "dsecs"
+    jdbc_user => "xxxx"
+    jdbc_password => "xxxx"
 	jdbc_default_timezone => "Asia/Shanghai"
   
-    statement => "SELECT sjdbh,ay,jjdwbh,scbjsj from t_sjd where sjc > :sql_last_value"
+    statement => "SELECT sjdbh,ay,jjdwbh,scbjsj from t_sjd "
+    jdbc_paging_enabled => "true"
+    jdbc_page_size => "50000"
+	
+	record_last_run => true
+    use_column_value => false
+	tracking_column_type => "timestamp"
+    tracking_column => "sjc"
+    last_run_metadata_path => "./sjd"
+	type => "sjd"
+  }
+  
+  jdbc {
+    jdbc_driver_library => "D:\\m2\\org\\postgresql\\postgresql\\9.4.1212\\postgresql-9.4.1212.jar"
+    jdbc_driver_class => "org.postgresql.Driver"
+    jdbc_connection_string => "jdbc:postgresql://192.168.52.229:8110/dsdb"
+    jdbc_user => "xxxx"
+    jdbc_password => "xxxx"
+	jdbc_default_timezone => "Asia/Shanghai"
+  
+    statement => "SELECT fkdbh,fkdw,fkkssj from t_fkd"
     jdbc_paging_enabled => "true"
     jdbc_page_size => "50000"
 	record_last_run => true
     use_column_value => false
+	tracking_column_type => "timestamp"
     tracking_column => "sjc"
-    last_run_metadata_path => "./log"
-	schedule => "* * * * *"
+    last_run_metadata_path => "./fkd"
+	type => "fkd"
   }
+  
+  
 }
 
 filter {
+  if[type] == "sjd"{
 	ruby {   
 	   code => "event.set('scbjsj', event.get('scbjsj').time.localtime + 8*60*60)"   
 	 }  
@@ -93,19 +117,46 @@ filter {
 	 mutate {  
        remove_field => ["timestamp"]  
      } 
+  }
 
+  if[type] == "fkd"{
+	ruby {   
+	   code => "event.set('fkkssj', event.get('fkkssj').time.localtime + 8*60*60)"   
+	 }
+	ruby {   
+	   code => "event.set('timestamp', event.get('@timestamp').time.localtime + 8*60*60)"   
+	 }  
+	 ruby {  
+	   code => "event.set('@timestamp',event.get('timestamp'))"  
+	 }  
+	 mutate {  
+       remove_field => ["timestamp"]  
+     }  
+  }
 }
 
 output {
   stdout {
     codec => rubydebug
   }
-  elasticsearch {
-	hosts => "http://172.16.3.151:9200"
-    # index名
-    index => "sjd"
-	document_type=>"_doc"  
+  
+  if[type] == "sjd"{
+	  elasticsearch {
+		hosts => "http://172.16.3.151:9200"
+		# index名
+		index => "sjd"
+		document_type=>"_doc"  
+	  }
   }
+  
+  if[type] == "fkd"{
+	  elasticsearch {
+		hosts => "http://172.16.3.151:9200"
+		# index名
+		index => "fkd"
+		document_type=>"_doc"  
+	  }
+  }  
 }
 ```
 5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf
