@@ -67,44 +67,79 @@ input {
     jdbc_connection_string => "jdbc:postgresql://192.168.52.229:8110/dsdb"
     jdbc_user => "xxxx"
     jdbc_password => "xxxx"
-	jdbc_default_timezone => "Asia/Shanghai"
+    jdbc_default_timezone => "Asia/Shanghai"
   
     statement => "SELECT sjdbh,ay,jjdwbh,scbjsj from t_sjd "
     jdbc_paging_enabled => "true"
     jdbc_page_size => "50000"
 	
-	record_last_run => true
+    record_last_run => true
     use_column_value => false
-	tracking_column_type => "timestamp"
+    tracking_column_type => "timestamp"
     tracking_column => "sjc"
     last_run_metadata_path => "./sjd"
-	type => "sjd"
-  }
-  
-  jdbc {
-    jdbc_driver_library => "D:\\m2\\org\\postgresql\\postgresql\\9.4.1212\\postgresql-9.4.1212.jar"
-    jdbc_driver_class => "org.postgresql.Driver"
-    jdbc_connection_string => "jdbc:postgresql://192.168.52.229:8110/dsdb"
-    jdbc_user => "xxxx"
-    jdbc_password => "xxxx"
-	jdbc_default_timezone => "Asia/Shanghai"
-  
-    statement => "SELECT fkdbh,fkdw,fkkssj from t_fkd"
-    jdbc_paging_enabled => "true"
-    jdbc_page_size => "50000"
-	record_last_run => true
-    use_column_value => false
-	tracking_column_type => "timestamp"
-    tracking_column => "sjc"
-    last_run_metadata_path => "./fkd"
-	type => "fkd"
   }
   
   
 }
 
 filter {
-  if[type] == "sjd"{
+    ruby {   
+	   code => "event.set('scbjsj', event.get('scbjsj').time.localtime + 8*60*60)"   
+	 }  
+	 ruby {   
+	   code => "event.set('timestamp', event.get('@timestamp').time.localtime + 8*60*60)"   
+	 }  
+	 ruby {  
+	   code => "event.set('@timestamp',event.get('timestamp'))"  
+	 }  
+	 mutate {  
+       remove_field => ["timestamp"]  
+     } 
+}
+
+output {
+  stdout {
+    codec => rubydebug
+  }
+  
+elasticsearch {
+    hosts => "http://172.16.3.151:9200"
+    # index名
+    index => "sjd"
+    document_type=>"_doc"  
+    }
+
+}
+```
+在以上配置中，sjc字段是数据的时间戳，每次查询大于时间戳的数据进行增量更新。schedule配置更新频率。
+ **注意：由于logstash默认采用UTC时间，导致导入的时间数据比我们晚八个小时，所以我们要在filter部分给时间字段加上八个小时，索引的数据才是正确的。** 
+如果想增量导入，我们根据表中的时间戳字段配合调度器实现，导入结束的时间戳会被写入文件，每次调度，会读取上次的最后的时间戳以后的新数据导入，配置文件如下：
+
+```
+input {
+  jdbc {
+    jdbc_driver_library => "D:\\m2\\org\\postgresql\\postgresql\\9.4.1212\\postgresql-9.4.1212.jar"
+    jdbc_driver_class => "org.postgresql.Driver"
+    jdbc_connection_string => "jdbc:postgresql://192.168.52.229:8110/dsdb"
+    jdbc_user => "xxxx"
+    jdbc_password => "xxxx"
+    jdbc_default_timezone => "Asia/Shanghai"
+  
+    statement => "SELECT sjdbh,ay,jjdwbh,scbjsj,sjc from t_sjd  where sjc > :sql_last_value"
+    jdbc_paging_enabled => "true"
+    jdbc_page_size => "50000"
+	
+    record_last_run => true
+    use_column_value => true
+    tracking_column_type => "timestamp"
+    tracking_column => "sjc"
+    last_run_metadata_path => "./sjd"
+    schedule => "* * * * *"
+  }
+}
+
+filter {
 	ruby {   
 	   code => "event.set('scbjsj', event.get('scbjsj').time.localtime + 8*60*60)"   
 	 }  
@@ -117,22 +152,7 @@ filter {
 	 mutate {  
        remove_field => ["timestamp"]  
      } 
-  }
-
-  if[type] == "fkd"{
-	ruby {   
-	   code => "event.set('fkkssj', event.get('fkkssj').time.localtime + 8*60*60)"   
-	 }
-	ruby {   
-	   code => "event.set('timestamp', event.get('@timestamp').time.localtime + 8*60*60)"   
-	 }  
-	 ruby {  
-	   code => "event.set('@timestamp',event.get('timestamp'))"  
-	 }  
-	 mutate {  
-       remove_field => ["timestamp"]  
-     }  
-  }
+  
 }
 
 output {
@@ -140,29 +160,18 @@ output {
     codec => rubydebug
   }
   
-  if[type] == "sjd"{
-	  elasticsearch {
-		hosts => "http://172.16.3.151:9200"
-		# index名
-		index => "sjd"
-		document_type=>"_doc"  
-	  }
+  elasticsearch {
+    hosts => "http://172.16.3.151:9200"
+    # index名
+    index => "sjd"
+    document_type=>"_doc"  
   }
   
-  if[type] == "fkd"{
-	  elasticsearch {
-		hosts => "http://172.16.3.151:9200"
-		# index名
-		index => "fkd"
-		document_type=>"_doc"  
-	  }
-  }  
+  
 }
 ```
-5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf
 
-在以上配置中，sjc字段是数据的时间戳，每次查询大于时间戳的数据进行增量更新。schedule配置更新频率。
- **注意：由于logstash默认采用UTC时间，导致导入的时间数据比我们晚八个小时，所以我们要在filter部分给时间字段加上八个小时，索引的数据才是正确的。** 
+5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf
 ### 效果图
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0823/105906_0e51ea07_1110335.png "1.png")
