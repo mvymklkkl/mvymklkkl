@@ -171,7 +171,7 @@ output {
 }
 ```
 
-5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf
+5. 在bin目录启动导入脚本：.\logstash -f .\jdbc.conf    **（如果想同时开启多个logstash，可以拷贝logstash道不同的目录下启动即可）** 
 ### 效果图
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0823/105906_0e51ea07_1110335.png "1.png")
