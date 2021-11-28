@@ -336,3 +336,10 @@ GET _nodes/stats
 GET _cat/nodes
 
 GET _cat/allocation?v
+
+PUT _settings
+{
+  "index": {
+    "max_result_window": 2147483647
+  }
+}
