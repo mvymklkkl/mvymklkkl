@@ -115,6 +115,17 @@ elasticsearch {
 }
 ```
 在以上配置中，记得用document_id指定索引的自定义主键，这样可以避免抽取重复数据到es，相同主键可以覆盖。
+对于多字段组成的联合主键，要把多个字段拼接成一个组成id，在filter里面加上：
+
+```
+         # docindex字段是pastkkdate和vehicleid组成的联合主键
+         mutate {
+		 add_field =>{
+			 "docindex" => "%{pastkkdate}_%{vehicleid}" 
+		 }
+	 }
+```
+指定document_id => "%{docindex}" 即可。
  
 **注意：由于logstash默认采用UTC时间，导致导入的时间数据比我们晚八个小时，所以我们要在filter部分给时间字段加上八个小时，索引的数据才是正确的。** 
 如果想增量导入，我们根据表中的时间戳字段配合调度器实现，导入结束的时间戳会被写入文件，每次调度，会读取上次的最后的时间戳以后的新数据导入，sjc字段是数据的时间戳，每次查询大于时间戳的数据进行增量更新。schedule配置更新频率。配置文件如下：
