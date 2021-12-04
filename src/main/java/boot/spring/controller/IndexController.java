@@ -1,11 +1,19 @@
 package boot.spring.controller;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,32 +37,87 @@ public class IndexController {
 	 * @param indextype
 	 * @param jsonMap
 	 * @return
-	 * {"properties": {
-        "age": {
-          "type": "integer"
-        },
-        "born": {
-          "type": "date",
-          "format": "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        },
-        "desc": {
-          "type": "text",
-          "analyzer": "ik_smart"
-        },
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "keyword"
-        }
-      }
-      }
+	 * @throws Exception 
 	 */
-	@ApiOperation("创建索引并设置字段类型")
-	@RequestMapping(value="/indexMapping/{indexname}",method = RequestMethod.POST)
+	@ApiOperation("创建各索引并设置字段类型:sougoulog")
+	@RequestMapping(value="/createIndexMapping",method = RequestMethod.GET)
 	@ResponseBody
-	MSG createMapping(@PathVariable String indexname, @RequestBody Map<String, Object> mapping){
-		indexService.createMapping(indexname, mapping);
+	MSG createMapping() throws Exception{
+		// 创建sougoulog索引映射
+		boolean exsit = indexService.existIndex("sougoulog");
+		if ( exsit == false ) {
+			XContentBuilder builder = XContentFactory.jsonBuilder();
+			builder.startObject();
+			{
+			    builder.startObject("properties");
+			    {
+			        builder.startObject("clicknum");
+			        {
+			            builder.field("type", "integer");
+			        }
+			        builder.endObject();
+			        builder.startObject("keywords");
+			        {
+			            builder.field("type", "text");
+			            builder.field("analyzer", "standard");
+			        }
+			        builder.endObject();
+			        builder.startObject("rank");
+			        {
+			            builder.field("type", "integer");
+			        }
+			        builder.endObject();
+			        builder.startObject("url");
+			        {
+			            builder.field("type", "text");
+			            builder.field("analyzer", "standard");
+			        }
+			        builder.endObject();
+			        builder.startObject("userid");
+			        {
+			            builder.field("type", "text");
+			            builder.field("analyzer", "standard");
+			        }
+			        builder.endObject();
+			        builder.startObject("visittime");
+			        {
+			            builder.field("type", "text");
+			            builder.field("analyzer", "standard");
+			        }
+			        builder.endObject();
+			    }
+			    builder.endObject();
+			}
+			builder.endObject();
+			indexService.createMapping("sougoulog",builder);
+		}
+		return new MSG("index success");
+	}
+	
+	@ApiOperation("向索引sougoulog导入数据")
+	@RequestMapping(value="/indexDocs",method = RequestMethod.GET)
+	@ResponseBody
+	MSG indexDocs() throws Exception {
+		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:SougouQ.log")));
+		String s;
+		int i = 1;
+		List<Map<String, Object>> docs = new ArrayList<>();
+		while ((s = br.readLine()) != null) {
+			String[] words = s.split(" |\t");
+	        System.out.println(words[0]+" "+words[1]+words[2]+words[5]);
+	        HashMap<String, Object> doc = new HashMap<String, Object>();
+	        doc.put("id", String.valueOf(i));
+	        doc.put("visittime", words[0]);
+	        doc.put("userid", words[1]);
+	        doc.put("keywords", words[2]);
+	        doc.put("rank", Integer.parseInt(words[3]));
+	        doc.put("clicknum", Integer.parseInt(words[4]));
+	        doc.put("url", words[5]);
+	        docs.add(doc);
+			i++;
+		}
+		br.close();
+		indexService.indexDocs("sougoulog", "_doc", docs);
 		return new MSG("index success");
 	}
 	
@@ -62,15 +125,7 @@ public class IndexController {
 	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.POST)
 	@ResponseBody
 	MSG indexDoc(@PathVariable String indexname, @PathVariable String indextype, @RequestBody Map<String, Object> jsonMap){
-		indexService.saveOrUpdateIndexDoc(indexname, indextype, jsonMap);
-		return new MSG("index success");
-	}
-	
-	@ApiOperation("向索引添加一组文档")
-	@RequestMapping(value="/indexDocs/{indexname}/{indextype}",method = RequestMethod.POST)
-	@ResponseBody
-	MSG indexDocs(@PathVariable String indexname, @PathVariable String indextype, @RequestBody List<Map<String, Object>> jsonMap){
-		indexService.indexDocs(indexname, indextype, jsonMap);
+		indexService.indexDoc(indexname, indextype, jsonMap);
 		return new MSG("index success");
 	}	
 	
@@ -86,5 +141,5 @@ public class IndexController {
 		}
 	}	
 
-
+	
 }

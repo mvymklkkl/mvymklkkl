@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import boot.spring.mapper.SougoulogMapper;
 import boot.spring.pagemodel.ActorGrid;
 import boot.spring.pagemodel.MSG;
 import boot.spring.po.Actor;
@@ -92,46 +91,10 @@ public class ActorController {
 		return "success";
 	}
 	
-	@ApiOperation("把演员导出为Excel")
-	@RequestMapping(value="/exportactor",method = RequestMethod.GET)
-	public void export(HttpServletResponse response) throws Exception{
-		InputStream is=actorservice.getInputStream();
-		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("contentDisposition", "attachment;filename=AllUsers.xls");
-		ServletOutputStream output = response.getOutputStream();
-		IOUtils.copy(is, output);
-	}
-	
 	@RequestMapping(value="/showactor",method = RequestMethod.GET)
 	String showactor(){
 		return "showactor";
 	}
-	
-	@Autowired
-	SougoulogMapper sougoulogMapper;
-	
-	@ApiOperation("批量导入日志")
-	@RequestMapping(value="/sougoulogs",method = RequestMethod.GET)
-	@ResponseBody
-	public MSG sougoulogs() throws Exception{
-		BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\dell\\Desktop\\Hadoop-hbase\\SougouQ.log"));
-		String s;
-		while ((s = br.readLine()) != null) {
-			String[] words = s.split(" |\t");
-	        System.out.println(words[0]+" "+words[1]+words[2]+words[5]);
-	        Sougoulog log = new Sougoulog();
-	        log.setVisittime(words[0]);
-	        log.setUserid(words[1]);
-	        log.setKeywords(words[2]);
-	        log.setRank(Integer.parseInt(words[3]));
-	        log.setClicknum(Integer.parseInt(words[4]));
-	        log.setUrl(words[5]);
-	        sougoulogMapper.insert(log);
-		}
-		return new MSG("import success");
-	}		
-	
-
 	
 	
 }

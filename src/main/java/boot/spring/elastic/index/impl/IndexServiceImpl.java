@@ -20,7 +20,10 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.PutMappingRequest;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,7 @@ public class IndexServiceImpl implements IndexService {
 	RestHighLevelClient client;
 	
 	@Override
-	public void saveOrUpdateIndexDoc(String indexName, String indexType, Map<String, Object> doc) {
-		
+	public void indexDoc(String indexName, String indexType, Map<String, Object> doc) {
 		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("id")).source(doc); 
 		try {
 		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
@@ -56,10 +58,8 @@ public class IndexServiceImpl implements IndexService {
 	            }
 	            BulkRequest request = new BulkRequest();
 	            for (Map<String, Object> doc : docs) {
-	                if (doc.get("id") != null) {
-	                    request.add(new IndexRequest(indexName, indexType, (String)doc.get("id"))
+	                request.add(new IndexRequest(indexName, indexType, (String)doc.get("id"))
 	                            .source(doc));
-	                }
 	            }
 	            BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
 	            if (bulkResponse != null) {
@@ -107,7 +107,7 @@ public class IndexServiceImpl implements IndexService {
 	}
 
 	@Override
-	public void createMapping(String indexname, Map<String, Object> mapping) {
+	public void createMapping(String indexname, XContentBuilder mapping) {
 		try {
 			CreateIndexRequest index = new CreateIndexRequest(indexname);
 			index.mapping(mapping);
@@ -116,5 +116,18 @@ public class IndexServiceImpl implements IndexService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean existIndex(String indexname) {
+		GetIndexRequest request = new GetIndexRequest(indexname);
+		try {
+			boolean exists = client.indices().exists(request, RequestOptions.DEFAULT);
+			return exists;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

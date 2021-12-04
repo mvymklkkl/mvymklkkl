@@ -14,6 +14,5 @@ import boot.spring.po.Actor;
 		Actor updateactor(Actor a);
 		Actor addactor(Actor a);
 		void delete(short id);
-		InputStream getInputStream() throws Exception;
 		
 	}
