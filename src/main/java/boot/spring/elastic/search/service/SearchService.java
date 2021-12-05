@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.elasticsearch.action.search.SearchResponse;
 
-import boot.spring.pagemodel.AYRequest;
 import boot.spring.pagemodel.ElasticSearchRequest;
 
 public interface SearchService {
@@ -13,7 +12,7 @@ public interface SearchService {
 	 * @param request
 	 * @return
 	 */
-	SearchResponse multiSearch(ElasticSearchRequest request);
+	SearchResponse query_string(ElasticSearchRequest request);
 	
 	/**
 	 * 精准搜索
@@ -27,6 +26,6 @@ public interface SearchService {
 	/**
 	 * terms聚集
 	 */
-	SearchResponse termsAggs(String index, AYRequest request);
+//	SearchResponse termsAggs(String index, AYRequest request);
 	
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.search.ConstantScoreQuery;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -25,6 +26,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.avg.AvgAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,6 @@ import boot.spring.elastic.search.querytypes.MatchQuery;
 import boot.spring.elastic.search.querytypes.RangeQuery;
 import boot.spring.elastic.search.querytypes.TermQuery;
 import boot.spring.elastic.search.service.SearchService;
-import boot.spring.pagemodel.AYRequest;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
 
@@ -45,10 +46,10 @@ public class SearchServiceImpl implements SearchService {
 	RestHighLevelClient client;
 	
 	@Override
-	public SearchResponse multiSearch(ElasticSearchRequest request) {
-		SearchRequest searchRequest = new SearchRequest("fkdb");
+	public SearchResponse query_string(ElasticSearchRequest request) {
+		SearchRequest searchRequest = new SearchRequest(request.getQuery().getIndexnames());
 		// 如果关键词为空，则返回所有
-		String content = request.getQuery().getKeyWords();
+		String content = request.getQuery().getKeywords();
 		Integer rows = request.getQuery().getRows();
 		if (rows == null || rows == 0) {
 			rows = 10;
@@ -90,9 +91,15 @@ public class SearchServiceImpl implements SearchService {
 			}
 		}		
 	    searchSourceBuilder.query(builder);
-		searchRequest.source(searchSourceBuilder);
+	    // 处理高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("*");
+        searchSourceBuilder.highlighter(highlightBuilder);
 		searchSourceBuilder.from(start);
 		searchSourceBuilder.size(rows);
+		
+		
+		searchRequest.source(searchSourceBuilder);
 		SearchResponse searchResponse = null;
 		try {
 			searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -107,7 +114,7 @@ public class SearchServiceImpl implements SearchService {
 	public HashMap<String, Long> dateHistogram(ElasticSearchRequest request) {
 		SearchRequest searchRequest = new SearchRequest("sougoulog");
 		// 如果关键词为空，则返回所有
-		String content = request.getQuery().getKeyWords();
+		String content = request.getQuery().getKeywords();
 		Integer rows = request.getQuery().getRows();
 		if (rows == null || rows == 0) {
 			rows = 10;
@@ -183,43 +190,43 @@ public class SearchServiceImpl implements SearchService {
 		return resultMap;
 	}
 	
-	@Override
-	public SearchResponse termsAggs(String index, AYRequest request) {
-		SearchRequest searchRequest = new SearchRequest(index);
-		BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
-		String code = request.getCode();
-		String fieldName = "";
-		String lastCode ="";
-		if (code!=null){
-		   lastCode = code.substring(code.length()-2);
-		}
-		if (code == null ||"".equals(code)) {
-			// 一级
-			fieldName = "bjlbbh";
-		} else if (code.length()==2){
-			// 传入一级编号 
-			fieldName = "bjlxbh"; //在类型上聚集
-			builder.must(QueryBuilders.termQuery("bjlbbh", code));
-		}else if ("00".equals(lastCode)) {
-			// 传入二级类型编号
-			fieldName = "bjxlbh";
-			builder.must(QueryBuilders.termQuery("bjlxbh", code));
-		} 
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		// terms聚集
-		AggregationBuilder aggregationBuilder = AggregationBuilders.terms("aggsName")
-				.field(fieldName).size(Integer.MAX_VALUE).order(BucketOrder.key(true));
-		searchSourceBuilder.query(builder).aggregation(aggregationBuilder);
-		searchRequest.source(searchSourceBuilder);
-		SearchResponse searchResponse = null;
-		try {
-			searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return searchResponse;
-	}
+//	@Override
+//	public SearchResponse termsAggs(String index, AYRequest request) {
+//		SearchRequest searchRequest = new SearchRequest(index);
+//		BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
+//		String code = request.getCode();
+//		String fieldName = "";
+//		String lastCode ="";
+//		if (code!=null){
+//		   lastCode = code.substring(code.length()-2);
+//		}
+//		if (code == null ||"".equals(code)) {
+//			// 一级
+//			fieldName = "bjlbbh";
+//		} else if (code.length()==2){
+//			// 传入一级编号 
+//			fieldName = "bjlxbh"; //在类型上聚集
+//			builder.must(QueryBuilders.termQuery("bjlbbh", code));
+//		}else if ("00".equals(lastCode)) {
+//			// 传入二级类型编号
+//			fieldName = "bjxlbh";
+//			builder.must(QueryBuilders.termQuery("bjlxbh", code));
+//		} 
+//		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+//		// terms聚集
+//		AggregationBuilder aggregationBuilder = AggregationBuilders.terms("aggsName")
+//				.field(fieldName).size(Integer.MAX_VALUE).order(BucketOrder.key(true));
+//		searchSourceBuilder.query(builder).aggregation(aggregationBuilder);
+//		searchRequest.source(searchSourceBuilder);
+//		SearchResponse searchResponse = null;
+//		try {
+//			searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return searchResponse;
+//	}
 
 	@Override
 	public SearchResponse termSearch(String index, String field, String term) {

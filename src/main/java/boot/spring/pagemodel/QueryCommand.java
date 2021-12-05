@@ -4,8 +4,10 @@ package boot.spring.pagemodel;
  * Description:检索参数
  */
 public class QueryCommand {
+	// 索引列表
+	private String indexnames;
 	//关键词
-	private String keyWords;
+	private String keywords;
 	//搜索域
 	private String search_field;
 	//逻辑连接词
@@ -14,8 +16,6 @@ public class QueryCommand {
 	private int start;
 	//返回条数
 	private int rows;
-	//返回字段
-	private String return_filed;
 	//切面检索域
 	private String facetField;
 	//时间切面
@@ -37,12 +37,20 @@ public class QueryCommand {
 	//检索半径
 	private String d;
 
-	public String getKeyWords() {
-		return keyWords;
+	public String getIndexnames() {
+		return indexnames;
 	}
 
-	public void setKeyWords(String keyWords) {
-		this.keyWords = keyWords;
+	public void setIndexnames(String indexnames) {
+		this.indexnames = indexnames;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
 	}
 
 	public String getSearch_field() {
@@ -75,14 +83,6 @@ public class QueryCommand {
 
 	public void setRows(int rows) {
 		this.rows = rows;
-	}
-
-	public String getReturn_filed() {
-		return return_filed;
-	}
-
-	public void setReturn_filed(String return_filed) {
-		this.return_filed = return_filed;
 	}
 
 	public String getFacetField() {
