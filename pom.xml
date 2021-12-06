@@ -4,7 +4,11 @@
     <artifactId>elastic-search-rest</artifactId>
     <version>1.6.0</version>
   <dependencies>
-
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.9</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>

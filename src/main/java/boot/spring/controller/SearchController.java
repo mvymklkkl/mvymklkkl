@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import boot.spring.elastic.search.service.SearchService;
 import boot.spring.pagemodel.AggsResultResponse;
 import boot.spring.pagemodel.ElasticSearchRequest;
@@ -35,47 +34,47 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "搜索接口")
 @Controller
 public class SearchController {
-	
+
 	@Autowired
 	SearchService searchService;
-	
+
 	@Autowired
 	RestHighLevelClient client;
-	
+
 	@ApiOperation("query_string全字段查找")
-	@RequestMapping(value="/query_string",method = RequestMethod.POST)
+	@RequestMapping(value = "/query_string", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultData query_string(@RequestBody ElasticSearchRequest request) {
-			// 搜索结果
-			List<Object> data = new ArrayList<Object>();
-			SearchResponse searchResponse = searchService.query_string(request);
-			SearchHits hits = searchResponse.getHits();
-			SearchHit[] searchHits = hits.getHits();
-			for (SearchHit hit : searchHits) {
-				Map<String, Object> highlights = new HashMap<String, Object>();
-				Map<String, Object> map = hit.getSourceAsMap();
-				// 获取高亮结果
-				Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-				for (Map.Entry<String, HighlightField> entry : highlightFields.entrySet()) {
-					String mapKey = entry.getKey();
-					HighlightField mapValue = entry.getValue();
-					Text[] fragments = mapValue.fragments();
-					String fragmentString = fragments[0].string();
-					highlights.put(mapKey, fragmentString);
-				}
-				map.put("highlight", highlights);
-				data.add(map);
+		// 搜索结果
+		List<Object> data = new ArrayList<Object>();
+		SearchResponse searchResponse = searchService.query_string(request);
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> highlights = new HashMap<String, Object>();
+			Map<String, Object> map = hit.getSourceAsMap();
+			// 获取高亮结果
+			Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+			for (Map.Entry<String, HighlightField> entry : highlightFields.entrySet()) {
+				String mapKey = entry.getKey();
+				HighlightField mapValue = entry.getValue();
+				Text[] fragments = mapValue.fragments();
+				String fragmentString = fragments[0].string();
+				highlights.put(mapKey, fragmentString);
 			}
-			ResultData resultData = new ResultData();
-			resultData.setQtime(new Date());
-			resultData.setData(data);
-			resultData.setNumberFound(hits.getTotalHits());
-			resultData.setStart(request.getQuery().getStart());
-			return resultData;
+			map.put("highlight", highlights);
+			data.add(map);
+		}
+		ResultData resultData = new ResultData();
+		resultData.setQtime(new Date());
+		resultData.setData(data);
+		resultData.setNumberFound(hits.getTotalHits());
+		resultData.setStart(request.getQuery().getStart());
+		return resultData;
 	}
 
 	@ApiOperation("日期直方图聚集")
-	@RequestMapping(value="/dateHistogram",method = RequestMethod.POST)
+	@RequestMapping(value = "/dateHistogram", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<AggsResultResponse> dateHistogram(@RequestBody ElasticSearchRequest request) {
 		try {
@@ -93,7 +92,6 @@ public class SearchController {
 			AggsResultResponse rep = new AggsResultResponse(HttpStatus.BAD_REQUEST, 500, "后台错误", "请求失败", null);
 			return new ResponseEntity<AggsResultResponse>(rep, HttpStatus.BAD_REQUEST);
 		}
-	}	
+	}
 
-	
 }

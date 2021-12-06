@@ -8,8 +8,6 @@ public class ResultData {
 	
 	Integer start;
 	
-	Integer maxFieldCount;
-	
 	Date qtime;
 	
 	List<Object> data;
@@ -28,14 +26,6 @@ public class ResultData {
 
 	public void setStart(Integer start) {
 		this.start = start;
-	}
-
-	public Integer getMaxFieldCount() {
-		return maxFieldCount;
-	}
-
-	public void setMaxFieldCount(Integer maxFieldCount) {
-		this.maxFieldCount = maxFieldCount;
 	}
 
 	public List<Object> getData() {

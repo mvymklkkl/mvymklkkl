@@ -11,6 +11,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -31,6 +32,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import boot.spring.elastic.search.querytypes.FuzzyQuery;
 import boot.spring.elastic.search.querytypes.MatchQuery;
 import boot.spring.elastic.search.querytypes.RangeQuery;
@@ -38,6 +40,7 @@ import boot.spring.elastic.search.querytypes.TermQuery;
 import boot.spring.elastic.search.service.SearchService;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
+import boot.spring.util.ToolUtils;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -61,7 +64,13 @@ public class SearchServiceImpl implements SearchService {
 		}
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		// 提取搜索内容
-		BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(content));
+//		BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(content));
+		BoolQueryBuilder builder;
+        if("*".equalsIgnoreCase(content)){
+            builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(content).defaultOperator(Operator.AND));
+        }else {
+            builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(ToolUtils.handKeyword(content)).defaultOperator(Operator.AND));
+        }
 		// 提取过滤条件
 		FilterCommand filter = request.getFilter();
 		List<RangeQuery> ranges = filter.getRanges();
