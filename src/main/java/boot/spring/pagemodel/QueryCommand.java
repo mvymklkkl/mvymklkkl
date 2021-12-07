@@ -1,56 +1,42 @@
 package boot.spring.pagemodel;
 
+import java.util.Date;
+
 /**
  * Description:检索参数
  */
 public class QueryCommand {
-	// 索引列表
-	private String indexnames;
+	// 表名
+	String indexname;
 	//关键词
-	private String keywords;
+	private String keyWords;
 	//搜索域
 	private String search_field;
 	//逻辑连接词
 	private String operator;
+	// 排序
+	String sort;
 	//起始位置
 	private int start;
 	//返回条数
 	private int rows;
-	//切面检索域
-	private String facetField;
-	//时间切面
-	private String facetDateFiled;
-	//切面增长步长
-	private String step;
-	//切面检索
-	private String facetQuery;
-	//pivot域
-	private String[] pivotFields;
-	//权重值
-	private String boost;
-	//是否开启高亮显示
-	private boolean highlightOn;
-	//高亮显示域
-	private String[] highlightField;
-	//当前经纬度
-	private String pt;
-	//检索半径
-	private String d;
+	//返回字段
+	private String return_filed;
+	
+	String startdate;
 
-	public String getIndexnames() {
-		return indexnames;
+	String enddate;
+	// 聚集字段
+	String aggsField;
+	// 步长
+	Integer step;
+	
+	public String getKeyWords() {
+		return keyWords;
 	}
 
-	public void setIndexnames(String indexnames) {
-		this.indexnames = indexnames;
-	}
-
-	public String getKeywords() {
-		return keywords;
-	}
-
-	public void setKeywords(String keywords) {
-		this.keywords = keywords;
+	public void setKeyWords(String keyWords) {
+		this.keyWords = keyWords;
 	}
 
 	public String getSearch_field() {
@@ -85,83 +71,61 @@ public class QueryCommand {
 		this.rows = rows;
 	}
 
-	public String getFacetField() {
-		return facetField;
+	public String getReturn_filed() {
+		return return_filed;
 	}
 
-	public void setFacetField(String facetField) {
-		this.facetField = facetField;
+	public void setReturn_filed(String return_filed) {
+		this.return_filed = return_filed;
 	}
 
-	public String getFacetQuery() {
-		return facetQuery;
+
+	public String getIndexname() {
+		return indexname;
 	}
 
-	public void setFacetQuery(String facetQuery) {
-		this.facetQuery = facetQuery;
+	public void setIndexname(String indexname) {
+		this.indexname = indexname;
 	}
 
-	public String[] getPivotFields() {
-		return pivotFields;
+	public String getSort() {
+		return sort;
 	}
 
-	public void setPivotFields(String[] pivotFields) {
-		this.pivotFields = pivotFields;
+	public void setSort(String sort) {
+		this.sort = sort;
 	}
 
-	public String getBoost() {
-		return boost;
+	public String getStartdate() {
+		return startdate;
 	}
 
-	public void setBoost(String boost) {
-		this.boost = boost;
+	public void setStartdate(String startdate) {
+		this.startdate = startdate;
 	}
 
-	public boolean isHighlightOn() {
-		return highlightOn;
+	public String getEnddate() {
+		return enddate;
 	}
 
-	public void setHighlightOn(boolean highlightOn) {
-		this.highlightOn = highlightOn;
+	public void setEnddate(String enddate) {
+		this.enddate = enddate;
 	}
 
-	public String[] getHighlightField() {
-		return highlightField;
+	public String getAggsField() {
+		return aggsField;
 	}
 
-	public void setHighlightField(String[] highlightField) {
-		this.highlightField = highlightField;
+	public void setAggsField(String aggsField) {
+		this.aggsField = aggsField;
 	}
 
-	public String getFacetDateFiled() {
-		return facetDateFiled;
-	}
-
-	public void setFacetDateFiled(String facetDateFiled) {
-		this.facetDateFiled = facetDateFiled;
-	}
-
-	public String getPt() {
-		return pt;
-	}
-
-	public void setPt(String pt) {
-		this.pt = pt;
-	}
-
-	public String getD() {
-		return d;
-	}
-
-	public void setD(String d) {
-		this.d = d;
-	}
-
-	public String getStep() {
+	public Integer getStep() {
 		return step;
 	}
 
-	public void setStep(String step) {
+	public void setStep(Integer step) {
 		this.step = step;
 	}
+	
 }

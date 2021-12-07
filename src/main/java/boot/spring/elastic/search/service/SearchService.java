@@ -18,14 +18,5 @@ public interface SearchService {
 	 * 精准搜索
 	 */
 	SearchResponse termSearch(String index, String field,String term);
-	/**
-	 * 日期分面搜索
-	 */
-	HashMap<String, Long> dateHistogram(ElasticSearchRequest request);
-	
-	/**
-	 * terms聚集
-	 */
-//	SearchResponse termsAggs(String index, AYRequest request);
 	
 }

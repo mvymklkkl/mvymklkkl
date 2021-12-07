@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 public class ResultData {
-	Long NumberFound;
+Long NumberFound;
 	
 	Integer start;
 	
 	Date qtime;
 	
-	List<Object> data;
+	Object data;
 
 	public Long getNumberFound() {
 		return NumberFound;
@@ -28,9 +28,6 @@ public class ResultData {
 		this.start = start;
 	}
 
-	public List<Object> getData() {
-		return data;
-	}
 
 	public void setData(List<Object> data) {
 		this.data = data;
@@ -43,5 +40,13 @@ public class ResultData {
 	public void setQtime(Date qtime) {
 		this.qtime = qtime;
 	}
-	
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+    
 }
