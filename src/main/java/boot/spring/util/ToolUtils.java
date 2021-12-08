@@ -1,9 +1,6 @@
 package boot.spring.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -103,37 +100,5 @@ public class ToolUtils {
         return handleKeyWords;
     }
 
-    private static BoolQueryBuilder boolMultiSearchQuery(String keywords){
-        BoolQueryBuilder builder;
-        if("*".equalsIgnoreCase(keywords)|| StringUtils.isBlank(keywords)){
-            return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
-        }
-        builder = QueryBuilders.boolQuery();
-        String[] keywordArray=keywords.split(" ");
-        Integer length = keywordArray.length;
-        if(length==1){
-            return builder.must(QueryBuilders.multiMatchQuery(keywordArray[0], "*").type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
-        }
-        for(int i =0;i<length;i++){
-            if(i%2==0){ continue; }
-            if(keywordArray[i].equalsIgnoreCase("AND")){
-                builder.must(QueryBuilders.multiMatchQuery(keywordArray[i-1], "*").type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
-                if(i+1>length-1){ continue; }
-                builder.must(QueryBuilders.multiMatchQuery(keywordArray[i+1], "*").type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
-            }else if(keywordArray[i].equalsIgnoreCase("OR")){
-                if(i+1>length-1){ continue; }
-                builder.should(QueryBuilders.multiMatchQuery(keywordArray[i+1], "*").type(MultiMatchQueryBuilder.Type.PHRASE_PREFIX));
-            };
-        }
-        return builder;
-    }
 
-
-    //    2019-10-22T11:10:10.000Z
-    public static void main(String[] args) {
-//        System.out.println(EsDateTimeTransfrom("2019-10-22T11:10:10.000Z","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'","yyyy-MM-dd HH:mm:ss"));
-//        System.out.println(handKeyword("张三 and NOT 斗殴 "));
-        String str = "(a and b) or c";
-        System.out.println(boolMultiSearchQuery("(a and b) or c").toString(true));
-    }
 }
