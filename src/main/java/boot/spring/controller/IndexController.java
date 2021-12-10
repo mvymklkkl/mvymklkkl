@@ -4,7 +4,10 @@ package boot.spring.controller;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import boot.spring.elastic.index.IndexService;
 import boot.spring.pagemodel.MSG;
+import boot.spring.util.ToolUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -81,8 +85,8 @@ public class IndexController {
 			        builder.endObject();
 			        builder.startObject("visittime");
 			        {
-			            builder.field("type", "text");
-			            builder.field("analyzer", "standard");
+			            builder.field("type", "date");
+			            builder.field("format", "HH:mm:ss");
 			        }
 			        builder.endObject();
 			    }
@@ -116,8 +120,19 @@ public class IndexController {
 	        docs.add(doc);
 			i++;
 		}
+		int start = 0;
+		while (start < docs.size()) {
+			int end = 0;
+			if (start + 1000 <= docs.size()) {
+				end = start + 1000;
+			} else {
+				end = docs.size() - 1;
+			}
+			List<Map<String, Object>> sublist = docs.subList(start, end);
+			indexService.indexDocs("sougoulog", "_doc", sublist);
+			start += 1000;
+		}
 		br.close();
-		indexService.indexDocs("sougoulog", "_doc", docs);
 		return new MSG("index success");
 	}
 	
