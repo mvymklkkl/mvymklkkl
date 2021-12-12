@@ -53,6 +53,49 @@ public class IndexController {
 			XContentBuilder builder = XContentFactory.jsonBuilder();
 			builder.startObject();
 			{
+				builder.startObject("settings");
+			  	{
+			  		builder.startObject("analysis");
+			        {
+			        	builder.startObject("filter");
+				        {
+				        	builder.startObject("my_filter");
+					        {
+					        	builder.field("type", "stop");
+					        	builder.field("stopwords", "");
+					        }
+					        builder.endObject();
+				        }
+				        builder.endObject();
+				        builder.startObject("tokenizer");
+				        {
+				        	builder.startObject("my_tokenizer");
+					        {
+					        	builder.field("type", "standard");
+					        	builder.field("max_token_length", "1");
+					        }
+					        builder.endObject();
+				        }
+				        builder.endObject();
+				        builder.startObject("analyzer");
+				        {
+				        	builder.startObject("my_analyzer");
+					        {
+					        	builder.field("filter", "my_filter");
+					        	builder.field("char_filter", "");
+					        	builder.field("type", "custom");
+					        	builder.field("tokenizer", "my_tokenizer");
+					        }
+					        builder.endObject();
+				        }
+				        builder.endObject();
+			        }
+			        builder.endObject();
+			  	}
+			  	builder.endObject();
+			  	
+			  	builder.startObject("mappings");
+			    {
 			    builder.startObject("properties");
 			    {
 			        builder.startObject("clicknum");
@@ -63,7 +106,7 @@ public class IndexController {
 			        builder.startObject("keywords");
 			        {
 			            builder.field("type", "text");
-			            builder.field("analyzer", "standard");
+			            builder.field("analyzer", "my_analyzer");
 			        }
 			        builder.endObject();
 			        builder.startObject("rank");
@@ -74,13 +117,13 @@ public class IndexController {
 			        builder.startObject("url");
 			        {
 			            builder.field("type", "text");
-			            builder.field("analyzer", "standard");
+			            builder.field("analyzer", "my_analyzer");
 			        }
 			        builder.endObject();
 			        builder.startObject("userid");
 			        {
 			            builder.field("type", "text");
-			            builder.field("analyzer", "standard");
+			            builder.field("analyzer", "my_analyzer");
 			        }
 			        builder.endObject();
 			        builder.startObject("visittime");
@@ -91,8 +134,11 @@ public class IndexController {
 			        builder.endObject();
 			    }
 			    builder.endObject();
+			    }
+		        builder.endObject();
 			}
 			builder.endObject();
+			System.out.println(builder.prettyPrint());
 			indexService.createMapping("sougoulog",builder);
 		}
 		return new MSG("index success");

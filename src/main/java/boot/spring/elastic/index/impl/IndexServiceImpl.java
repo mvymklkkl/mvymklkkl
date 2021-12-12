@@ -110,7 +110,7 @@ public class IndexServiceImpl implements IndexService {
 	public void createMapping(String indexname, XContentBuilder mapping) {
 		try {
 			CreateIndexRequest index = new CreateIndexRequest(indexname);
-			index.mapping(mapping);
+			index.source(mapping);
 			client.indices().create(index, RequestOptions.DEFAULT);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
