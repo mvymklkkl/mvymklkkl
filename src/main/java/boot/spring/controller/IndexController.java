@@ -42,6 +42,63 @@ public class IndexController {
 	 * @param jsonMap
 	 * @return
 	 * @throws Exception 
+	 * rest api:
+	    PUT sougoulog
+		{
+		  "settings": {
+		    "analysis": {
+		      "filter": {
+		        "my_filter": {
+		          "type": "stop",
+		          "stopwords": ""
+		        }
+		      },
+		      "tokenizer": {
+		        "my_tokenizer": {
+		          "type": "standard",
+		          "max_token_length": "1"
+		        }
+		      },
+		      "analyzer": {
+		        "my_analyzer": {
+		          "filter": "my_filter",
+		          "char_filter": "",
+		          "type": "custom",
+		          "tokenizer": "my_tokenizer"
+		        }
+		      }
+		    }
+		  },
+		  "mappings": {
+		    "_doc": {
+		      "properties": {
+		          "clicknum": {
+		            "type": "integer"
+		          },
+		          "keywords": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "rank": {
+		            "type": "integer"
+		          },
+		          "url": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "userid": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "visittime": {
+		            "type": "date",
+		            "format": "HH:mm:ss"
+		          }
+		        
+		      }
+		    }
+		  }
+		}
 	 */
 	@ApiOperation("创建各索引并设置字段类型:sougoulog")
 	@RequestMapping(value="/createIndexMapping",method = RequestMethod.GET)
