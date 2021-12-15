@@ -58,7 +58,7 @@ public class IndexServiceImpl implements IndexService {
 	            }
 	            BulkRequest request = new BulkRequest();
 	            for (Map<String, Object> doc : docs) {
-	                request.add(new IndexRequest(indexName, indexType, (String)doc.get("id"))
+	                request.add(new IndexRequest(indexName, indexType, (String)doc.get("key"))
 	                            .source(doc));
 	            }
 	            BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);

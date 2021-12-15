@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -72,32 +73,38 @@ public class SearchServiceImpl implements SearchService {
         }
 		// 提取过滤条件
 		FilterCommand filter = request.getFilter();
-		List<RangeQuery> ranges = filter.getRanges();
-		if (ranges != null && ranges.size() > 0) {
-			for (RangeQuery range : ranges) {
-				builder.must(QueryBuilders.rangeQuery(range.getField()).from(range.getFrom()).to(range.getTo()));
+		if (filter != null) {
+			List<RangeQuery> ranges = filter.getRanges();
+			if (ranges != null && ranges.size() > 0) {
+				for (RangeQuery range : ranges) {
+					builder.must(QueryBuilders.rangeQuery(range.getField()).from(range.getFrom()).to(range.getTo()));
+				}
 			}
+			List<TermQuery> terms = filter.getTerms();
+			if (terms != null && terms.size() > 0) {
+				for (TermQuery term : terms) {
+					builder.must(QueryBuilders.termQuery(term.getField(), term.getValue()));
+				}
+			}
+	
+			List<FuzzyQuery> fuzzys = filter.getFuzzys();
+			if (fuzzys != null && fuzzys.size() > 0) {
+				for (FuzzyQuery fuzzy : fuzzys) {
+					builder.must(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
+				}
+			}
+			
+			List<MatchQuery> matches = filter.getMatches();
+			if (matches != null && matches.size() > 0) {
+				for (MatchQuery match : matches) {
+					builder.must(QueryBuilders.matchQuery(match.getField(), match.getValue()));
+				}
+			}		
 		}
-		List<TermQuery> terms = filter.getTerms();
-		if (terms != null && terms.size() > 0) {
-			for (TermQuery term : terms) {
-				builder.must(QueryBuilders.termQuery(term.getField(), term.getValue()));
-			}
-		}
-
-		List<FuzzyQuery> fuzzys = filter.getFuzzys();
-		if (fuzzys != null && fuzzys.size() > 0) {
-			for (FuzzyQuery fuzzy : fuzzys) {
-				builder.must(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
-			}
-		}
-		
-		List<MatchQuery> matches = filter.getMatches();
-		if (matches != null && matches.size() > 0) {
-			for (MatchQuery match : matches) {
-				builder.must(QueryBuilders.matchQuery(match.getField(), match.getValue()));
-			}
-		}		
+		// 排序
+		if(StringUtils.isNoneBlank(request.getQuery().getSort())){
+			searchSourceBuilder.sort(request.getQuery().getSort(), SortOrder.ASC);
+	    }
 	    searchSourceBuilder.query(builder);
 	    // 处理高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();

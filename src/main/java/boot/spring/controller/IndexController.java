@@ -155,6 +155,11 @@ public class IndexController {
 			    {
 			    builder.startObject("properties");
 			    {
+			    	builder.startObject("id");
+			        {
+			            builder.field("type", "integer");
+			        }
+			        builder.endObject();
 			        builder.startObject("clicknum");
 			        {
 			            builder.field("type", "integer");
@@ -213,7 +218,8 @@ public class IndexController {
 			String[] words = s.split(" |\t");
 	        System.out.println(words[0]+" "+words[1]+words[2]+words[5]);
 	        HashMap<String, Object> doc = new HashMap<String, Object>();
-	        doc.put("id", String.valueOf(i));
+	        doc.put("key", String.valueOf(i));
+	        doc.put("id", i);
 	        doc.put("visittime", words[0]);
 	        doc.put("userid", words[1]);
 	        doc.put("keywords", words[2]);
