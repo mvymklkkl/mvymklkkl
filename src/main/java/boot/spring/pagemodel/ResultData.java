@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ResultData {
-Long NumberFound;
+	Long NumberFound;
 	
 	Integer start;
 	
@@ -28,10 +28,6 @@ Long NumberFound;
 		this.start = start;
 	}
 
-
-	public void setData(List<Object> data) {
-		this.data = data;
-	}
 
 	public Date getQtime() {
 		return qtime;

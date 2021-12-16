@@ -12,8 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
@@ -23,17 +30,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import boot.spring.elastic.index.IndexService;
+import com.alibaba.fastjson.JSON;
+
+import boot.spring.elastic.service.IndexService;
 import boot.spring.pagemodel.MSG;
-import boot.spring.util.ToolUtils;
+import boot.spring.po.Sougoulog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Api(tags = "索引接口")
 @Controller
 public class IndexController {
+	
+	@Autowired
+	RestHighLevelClient client;
+	
 	@Autowired
 	IndexService indexService;
+	
+	@ApiOperation("索引一个日志文档")
+	@RequestMapping(value="/indexSougoulog", method = RequestMethod.POST)
+	@ResponseBody
+	MSG indexDoc(@RequestBody Sougoulog log){
+		IndexRequest indexRequest = new IndexRequest("sougoulog", "_doc", String.valueOf(log.getId())); 
+		indexRequest.source(JSON.toJSONString(log), XContentType.JSON);
+		try {
+		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
+		} catch(ElasticsearchException e ) {
+		    if (e.status() == RestStatus.CONFLICT) {
+		    	System.out.println("写入索引产生冲突"+e.getDetailedMessage());
+		    }
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return new MSG("index success");
+	}		
 	
 	/**
 	 * 创建索引并设置字段类型
@@ -72,6 +103,9 @@ public class IndexController {
 		  "mappings": {
 		    "_doc": {
 		      "properties": {
+		      	  "id": {
+		            "type": "integer"
+		          },
 		          "clicknum": {
 		            "type": "integer"
 		          },

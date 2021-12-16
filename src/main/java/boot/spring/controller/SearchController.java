@@ -15,20 +15,21 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import boot.spring.elastic.search.service.AggsService;
-import boot.spring.elastic.search.service.SearchService;
+import boot.spring.elastic.service.AggsService;
+import boot.spring.elastic.service.SearchService;
 import boot.spring.pagemodel.DataGrid;
 import boot.spring.pagemodel.ElasticSearchRequest;
+import boot.spring.pagemodel.FilterCommand;
+import boot.spring.pagemodel.MSG;
 import boot.spring.pagemodel.QueryCommand;
-import boot.spring.pagemodel.RangeQuery;
 import boot.spring.pagemodel.ResultData;
-import boot.spring.po.Sougoulog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -50,11 +51,39 @@ public class SearchController {
 		return "sougoulog";
 	}
 	
+    @ApiOperation("获取一个日志数据")
+	@RequestMapping(value = "/sougoulog/{id}", method = RequestMethod.GET)
+	@ResponseBody
+    public ResultData sougoulog(@PathVariable String id) throws Exception{
+    	SearchResponse rsp = searchService.termSearch("sougoulog", "id", id);
+    	SearchHit[] searchHits = rsp.getHits().getHits();
+    	List<Object> data = new ArrayList<>();
+    	for (SearchHit hit : searchHits) {
+    		Map<String, Object> map = hit.getSourceAsMap();
+    		data.add(map);
+    	}
+    	ResultData rd = new ResultData();
+    	rd.setData(data);
+    	return rd;
+	}	
+    
+    @ApiOperation("获取日志数据的总数")
+	@RequestMapping(value = "/sougoulognumber", method = RequestMethod.GET)
+	@ResponseBody
+    public ResultData sougoulognumber() throws Exception {
+    	SearchResponse rsp = searchService.matchAllSearch("sougoulog");
+    	Long total = rsp.getHits().getTotalHits();
+    	ResultData rd = new ResultData();
+    	rd.setData(total);
+    	return rd;
+	}	    
+	
 	@ApiOperation("分页查询搜狗日志")
 	@RequestMapping(value = "/sougoulog", method = RequestMethod.POST)
 	@ResponseBody
 	public DataGrid<Object> listsougoulog(@RequestParam(value="current") int current, @RequestParam(value="rowCount") int rowCount
-			,@RequestParam(value="searchPhrase") String searchPhrase) {
+			,@RequestParam(value="searchPhrase") String searchPhrase,@RequestParam(value="startdate",required=false) String startdate
+			,@RequestParam(value="enddate",required=false) String enddate) {
 		DataGrid<Object> grid = new DataGrid<Object>();
 		List<Object> data = new ArrayList<>();
 		ElasticSearchRequest request = new ElasticSearchRequest();
@@ -69,6 +98,13 @@ public class SearchController {
 		query.setStart((current-1)*rowCount);
 		query.setSort("id");
 		request.setQuery(query);
+		if (StringUtils.isNotBlank(startdate) || StringUtils.isNotBlank(enddate)) {
+			FilterCommand filter = new FilterCommand();
+			filter.setField("visittime");
+			filter.setStartdate(startdate);
+			filter.setEnddate(enddate);
+			request.setFilter(filter);
+		}
 		SearchResponse searchResponse = searchService.query_string(request);
 		SearchHits hits = searchResponse.getHits();
 		SearchHit[] searchHits = hits.getHits();
@@ -150,7 +186,7 @@ public class SearchController {
     @ApiOperation("范围聚集")
 	@RequestMapping(value = "/rangeAggs", method = RequestMethod.POST)
 	@ResponseBody
-    public ResultData rangeAggs(RangeQuery query) throws Exception{
+    public ResultData rangeAggs(boot.spring.pagemodel.RangeQuery query) throws Exception{
 		ResultData data = aggsService.rangeAggs(query);
 		return data;
 	}    
