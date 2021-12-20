@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import boot.spring.elastic.service.AggsService;
+import boot.spring.pagemodel.BucketResult;
 import boot.spring.pagemodel.QueryCommand;
 import boot.spring.pagemodel.RangeQuery;
 import boot.spring.pagemodel.ResultData;
@@ -53,11 +54,10 @@ public class AggsServiceImpl implements AggsService {
         Aggregations result = searchResponse.getAggregations();
         Terms byCompanyAggregation = result.get("countnumber");
         List<? extends Terms.Bucket> bucketList = byCompanyAggregation.getBuckets();
-        List<HashMap<String, Long>> list = new ArrayList<>();
+        List<BucketResult> list = new ArrayList<>();
         for (Terms.Bucket bucket : bucketList) {
-            HashMap<String, Long> resultMap = new HashMap<String, Long>();
-            resultMap.put(bucket.getKeyAsString(), bucket.getDocCount());
-            list.add(resultMap);
+            BucketResult br = new BucketResult(bucket.getKeyAsString(), bucket.getDocCount());
+            list.add(br);
         }
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
@@ -98,15 +98,14 @@ public class AggsServiceImpl implements AggsService {
         searchSourceBuilder.size(content.getRows());
         SearchResponse searchResponse = null;
 
-        List<HashMap<String, Long>> list = new ArrayList<>();
         searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         Aggregations jsonAggs = searchResponse.getAggregations();
         Range range = (Range) jsonAggs.get("aggsName");
         List<? extends Range.Bucket> bucketList = range.getBuckets();
+        List<BucketResult> list = new ArrayList<>();
         for (Range.Bucket bucket : bucketList) {
-            HashMap<String, Long> resultMap = new HashMap<String, Long>();
-            resultMap.put(bucket.getKeyAsString(), bucket.getDocCount());
-            list.add(resultMap);
+        	BucketResult br = new BucketResult(bucket.getKeyAsString(), bucket.getDocCount());
+            list.add(br);
         }
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
@@ -182,12 +181,11 @@ public class AggsServiceImpl implements AggsService {
         searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         Aggregations jsonAggs = searchResponse.getAggregations();
         Histogram dateHistogram = (Histogram) jsonAggs.get("aggsName");
-        List<HashMap<String, Long>> list = new ArrayList<>();
         List<? extends Histogram.Bucket> bucketList = dateHistogram.getBuckets();
+        List<BucketResult> list = new ArrayList<>();
         for (Histogram.Bucket bucket : bucketList) {
-            HashMap<String, Long> resultMap = new HashMap<String, Long>();
-            resultMap.put(bucket.getKeyAsString(), bucket.getDocCount());
-            list.add(resultMap);
+            BucketResult br = new BucketResult(bucket.getKeyAsString(), bucket.getDocCount());
+            list.add(br);
         }
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
