@@ -48,6 +48,11 @@ public class IndexController {
 	@Autowired
 	IndexService indexService;
 	
+	@RequestMapping(value="/index", method = RequestMethod.GET)
+	String index() {
+		return "index";
+	}
+	
 	@ApiOperation("索引一个日志文档")
 	@RequestMapping(value="/indexSougoulog", method = RequestMethod.POST)
 	@ResponseBody

@@ -41,6 +41,12 @@
 em {
 	color: red
 }
+pre {outline: 1px solid #ccc; }
+ .string { color: green; }
+ .number { color: darkorange; }
+ .boolean { color: blue; }
+ .null { color: magenta; }
+ .key { color: red; }
 </style>
 <!-- Google Font -->
 <link rel="stylesheet" href="dist/css/fonts.googleapis.com.css">
@@ -120,16 +126,16 @@ em {
 				<!-- sidebar menu: : style can be found in sidebar.less -->
 				<ul class="sidebar-menu" data-widget="tree">
 					<li class="header">MAIN NAVIGATION</li>
-					<li><a href="index"> <i class="fa fa-calendar"></i> <span>索引构建</span>
+					<li class="active"><a href="index"> <i class="fa fa-calendar"></i> <span>索引构建</span>
 					</a></li>
-					<li class="active treeview menu-open"><a href="#"> <i
+					<li class="treeview menu-open"><a href="#"> <i
 							class="fa fa-dashboard"></i> <span>高级搜索</span> <span
 							class="pull-right-container"> <i
 								class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 						<ul class="treeview-menu">
-							<li class="active"><a href="sougoulog"><i
+							<li><a href="sougoulog"><i
 									class="fa fa-circle-o"></i> 多字段搜索</a></li>
 						</ul></li>
 					<li><a href="analysis"> <i class="fa fa-edit"></i> <span>聚集统计</span>
@@ -167,8 +173,7 @@ em {
 							<!-- TABLE: LATEST ORDERS -->
 							<div class="box box-info">
 								<div class="box-header with-border">
-									<h3 class="box-title">多文本字段搜索+范围过滤</h3>
-
+									<h3 class="box-title">构建sougoulog索引结构</h3>
 									<div class="box-tools pull-right">
 										<button type="button" class="btn btn-box-tool"
 											data-widget="collapse">
@@ -183,87 +188,17 @@ em {
 								<!-- /.box-header -->
 								<div class="box-body">
 									<div class="col-md-12">
-										<!-- Custom Tabs -->
-										<div class="nav-tabs-custom">
-											<ul class="nav nav-tabs">
-												<li class="active"><a href="#tab_1" data-toggle="tab"><code>时间不限</code></a></li>
-												<li><a href="#tab_2" data-toggle="tab"><code>00:00:00-00:05:00</code></a></li>
-												<li><a href="#tab_3" data-toggle="tab"><code>00:05:00-00:10:00</code></a></li>
-											</ul>
-											<div class="tab-content">
-												<div class="tab-pane active" id="tab_1">
-												<div class="table-responsive">
-										<table id="grid-data"
-											class="table table-condensed table-hover table-striped">
-											<thead>
-												<tr>
-													<th data-column-id="id" data-identifier="true"
-														data-type="numeric">ID</th>
-													<th data-column-id="visittime">visittime</th>
-													<th data-column-id="userid" data-formatter="userid">userid</th>
-													<th data-column-id="keywords" data-formatter="keywords">keywords</th>
-													<th data-column-id="rank">rank</th>
-													<th data-column-id="clicknum">clicknum</th>
-													<th data-column-id="url" data-formatter="url">url</th>
-													<th data-column-id="commands" data-formatter="commands"
-														data-sortable="false">modify</th>
-												</tr>
-											</thead>
-										</table>
-									</div>
-												</div>
-												<!-- /.tab-pane -->
-												<div class="tab-pane" id="tab_2">
-												<div class="table-responsive">
-										<table id="grid-data2"
-											class="table table-condensed table-hover table-striped">
-											<thead>
-												<tr>
-													<th data-column-id="id" data-identifier="true"
-														data-type="numeric">ID</th>
-													<th data-column-id="visittime">visittime</th>
-													<th data-column-id="userid" data-formatter="userid">userid</th>
-													<th data-column-id="keywords" data-formatter="keywords">keywords</th>
-													<th data-column-id="rank">rank</th>
-													<th data-column-id="clicknum">clicknum</th>
-													<th data-column-id="url" data-formatter="url">url</th>
-												</tr>
-											</thead>
-										</table>
-									</div>
-												</div>
-												<!-- /.tab-pane -->
-												<div class="tab-pane" id="tab_3">
-		<div class="table-responsive">
-										<table id="grid-data3"
-											class="table table-condensed table-hover table-striped">
-											<thead>
-												<tr>
-													<th data-column-id="id" data-identifier="true"
-														data-type="numeric">ID</th>
-													<th data-column-id="visittime">visittime</th>
-													<th data-column-id="userid" data-formatter="userid">userid</th>
-													<th data-column-id="keywords" data-formatter="keywords">keywords</th>
-													<th data-column-id="rank">rank</th>
-													<th data-column-id="clicknum">clicknum</th>
-													<th data-column-id="url" data-formatter="url">url</th>
-												</tr>
-											</thead>
-										</table>
-									</div>
-												</div>
-											</div>
-											<!-- /.tab-content -->
-										</div>
-										<!-- nav-tabs-custom -->
+									<pre id="jsonShow" class="well">
+									</pre>
 									</div>
 								</div>
 							</div>
 							<!-- /.box-body -->
 							<div class="box-footer clearfix">
-								<a href="javascript:void(0)"
-									class="btn btn-sm btn-info btn-flat pull-left"
-									data-toggle="modal" data-target="#modal-info">添加一个日志记录</a>
+								<a href="javascript:void(0)" id="mapping"
+									class="btn btn-sm btn-warning btn-flat pull-left">构建索引结构</a>
+								<a href="javascript:void(0)" id="import"
+									class="btn btn-sm btn-info btn-flat pull-left">批量导入搜狗日志记录</a>
 							</div>
 							<!-- /.box-footer -->
 						</div>
@@ -463,129 +398,8 @@ em {
 	</div>
 	<!-- ./wrapper -->
 
-	<div class="modal modal-info fade" id="modal-info">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title">添加日志信息</h4>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<label for="fname">visittime</label> <input type="text"
-							name="first_name" class="form-control" id="visittime2"/>
-					</div>
-					<div class="form-group">
-						<label for="lname">userid</label> <input type="text"
-							name="last_name" class="form-control" id="userid2" />
-					</div>
-					<div class="form-group">
-						<label for="lname">keywords</label> <input type="text"
-							name="last_name" class="form-control" id="keywords2" />
-					</div>
-					<div class="form-group">
-						<label for="lname">rank</label> <input type="text"
-							name="last_name" class="form-control" id="rank2" />
-					</div>
-					<div class="form-group">
-						<label for="lname">clicknum</label> <input type="text"
-							name="last_name" class="form-control" id="clicknum2" />
-					</div>
-					<div class="form-group ">
-						<label for="lupdate">url</label> 
-						<input type="text" name="last_update" class="form-control" id="url2" />
-						<input type="hidden" id="id" name="id2" />
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-outline pull-left"
-						data-dismiss="modal">Close</button>
-					<button type="button" id="insertactor" class="btn btn-outline">Save
-						changes</button>
-				</div>
-			</div>
-			<!-- /.modal-content -->
-		</div>
-		<!-- /.modal-dialog -->
-	</div>
-	<!-- /.modal -->
 
-	<div class="modal modal-warning fade actormodal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title">修改日志信息</h4>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<label for="fname">visittime</label> <input type="text"
-							name="first_name" class="form-control" id="visittime" disabled="disabled"/>
-					</div>
-					<div class="form-group">
-						<label for="lname">userid</label> <input type="text"
-							name="last_name" class="form-control" id="userid" />
-					</div>
-					<div class="form-group">
-						<label for="lname">keywords</label> <input type="text"
-							name="last_name" class="form-control" id="keywords" />
-					</div>
-					<div class="form-group">
-						<label for="lname">rank</label> <input type="text"
-							name="last_name" class="form-control" id="rank" />
-					</div>
-					<div class="form-group">
-						<label for="lname">clicknum</label> <input type="text"
-							name="last_name" class="form-control" id="clicknum" />
-					</div>
-					<div class="form-group ">
-						<label for="lupdate">url</label> 
-						<input type="text" name="last_update" class="form-control" id="url" />
-						<input type="hidden" id="id" name="id" />
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-outline pull-left"
-						data-dismiss="modal">Close</button>
-					<button type="button" id="updateactor" class="btn btn-outline">Update
-						changes</button>
-				</div>
-			</div>
-			<!-- /.modal-content -->
-		</div>
-		<!-- /.modal-dialog -->
-	</div>
-	<!-- /.modal -->
 
-	<div class="modal modal-success fade" id="modal-success">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title">提示</h4>
-				</div>
-				<div class="modal-body">
-					<p>操作成功</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-outline pull-left"
-						data-dismiss="modal">Close</button>
-				</div>
-			</div>
-			<!-- /.modal-content -->
-		</div>
-		<!-- /.modal-dialog -->
-	</div>
-	<!-- /.modal -->
 
 	<!-- jQuery 3 -->
 	<script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -869,7 +683,105 @@ em {
   	 	
   });
  
+function jsonShowFn(json){
+                if (!json.match("^\{(.+:.+,*){1,}\}$")) {
+                    return json           //判断是否是json数据，不是直接返回
+                }
 
+                if (typeof json != 'string') {
+                    json = JSON.stringify(json, undefined, 2);
+                }
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+}
+$(document).ready(function(){
+	var json ={
+		  "settings": {
+		    "analysis": {
+		      "filter": {
+		        "my_filter": {
+		          "type": "stop",
+		          "stopwords": ""
+		        }
+		      },
+		      "tokenizer": {
+		        "my_tokenizer": {
+		          "type": "standard",
+		          "max_token_length": "1"
+		        }
+		      },
+		      "analyzer": {
+		        "my_analyzer": {
+		          "filter": "my_filter",
+		          "char_filter": "",
+		          "type": "custom",
+		          "tokenizer": "my_tokenizer"
+		        }
+		      }
+		    }
+		  },
+		  "mappings": {
+		    "_doc": {
+		      "properties": {
+		      	  "id": {
+		            "type": "integer"
+		          },
+		          "clicknum": {
+		            "type": "integer"
+		          },
+		          "keywords": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "rank": {
+		            "type": "integer"
+		          },
+		          "url": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "userid": {
+		            "type": "text",
+		            "analyzer": "my_analyzer"
+		          },
+		          "visittime": {
+		            "type": "date",
+		            "format": "HH:mm:ss"
+		          }
+		        
+		      }
+		    }
+		  }
+		};
+		
+	$('#jsonShow').html(jsonShowFn(JSON.stringify(json)));
+	
+	$("#mapping").click(function(){
+		$.get("createIndexMapping",function(){
+			alert("sougoulog索引创建成功");
+		});
+	});
+	
+	$("#import").click(function(){
+		$.get("indexDocs",function(){
+			alert("sougoulog数据导入成功");
+		});
+	});
+});
   </script>
 </body>
 </html>
