@@ -38,6 +38,7 @@ import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
 import boot.spring.util.ToolUtils;
 
+
 @Service
 public class SearchServiceImpl implements SearchService {
 	
@@ -70,7 +71,7 @@ public class SearchServiceImpl implements SearchService {
 		FilterCommand filter = request.getFilter();
 		if (filter != null) {
 			if (filter.getStartdate()!=null&&filter.getEnddate()!=null) {
-					builder.must(QueryBuilders.rangeQuery(filter.getField()).from(filter.getStartdate()).to(filter.getEnddate()));
+					builder.must(QueryBuilders.constantScoreQuery(QueryBuilders.rangeQuery(filter.getField()).from(filter.getStartdate()).to(filter.getEnddate())));
 			}
 		}
 		// 排序
