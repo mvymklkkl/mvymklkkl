@@ -3,26 +3,29 @@
 ### 介绍
 Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特性：
 
-1. 全文检索的实现主要包括构建索引、高级搜索、文本分词三个模块；
-2. 索引的构建有增量更新和全量更新，一般第一次全量更新，以后增量更新；
-3. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。当构建索引和搜索时，都需要经过“分析”，而分词是分析的一个环节。
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0805/082846_8cf33cda_1110335.png "微信截图_20190805082826.png")
-4. 高级搜索实现了以下几种：
-    - 普通查询,先分词再精准搜索：matchQuery
-    - 精准查询,不分词直接搜索：termQuery
-    - 模糊查询,搜索字符串接近的词：fuzzyQuery
-    - 布尔查询,使用布尔运算组合多个查询条件：boolQuery
-    - 范围查询：rangeQuery
-    - 前缀查询：prefixQuery
-    - 通配符查询：wildcardQuery
-    - 多字段搜索,指定多个字段进行搜索:multi_match 
-    - 全字段搜索，es自带的全字段搜索:query_string 
+1. 全文检索的实现主要包括构建索引、高级搜索、聚集统计、数据建模四个模块；
+2. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。使用IK分词器虽然能解决一些中文分词的问题，但是由于粉刺的粒度不够细，导致很多词语可能搜不到。例如索引里有词语“武汉”，但是搜索汉口时，搜不出来，因此，我们采用把文本拆分到最细粒度来进行分词，从而最大限度地搜索到相关结果。详情参考：[如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
+3. 高级搜索实现了以下几种：
+    - 多字段搜索,指定多个字段进行搜索:query_string，支持高亮显示
     - 经纬度搜索:distanceQuery
-    - 日期分面搜索,使用聚集实现，统计每个区间文档的数目:dateHistogramAggregation
-5. 文本分词使用了IK分词器：https://github.com/medcl/elasticsearch-analysis-ik
-6. 原始数据提交到倒排索引中以前，es可以对原始数据进行一系列的转换操作，这个过程叫做分析。一个完整的分析过程，要经过大于等于0个字符过滤器，一个分词器，大于等于0个分词过滤器组成。在搜索的时候，根据搜索方法的不同也可以选择是否进行经过分析过程。通常match搜索要经过分析，term搜索则不用。
+    - 范围过滤,对搜索结果进一步按照范围进行条件过滤：rangeQuery
+4. 聚集统计包含词条聚集、日期直方图聚集、范围聚集，并使用chart.js进行可视化
+5. swagger入口：http://localhost:8080/swagger-ui.html
+### 相关WIKI
+#### kibana篇
+- [CentOS上Kibana安装指南](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/CentOS%E4%B8%8AKibana%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97?sort_id=1717428)
+#### Logstash篇
+- [安装Logstash并全量导入数据库数据](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%AE%89%E8%A3%85Logstash%E5%B9%B6%E5%85%A8%E9%87%8F%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E6%95%B0%E6%8D%AE?sort_id=1717557)
+- [使用Logstash增量更新数据](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E4%BD%BF%E7%94%A8Logstash%E5%A2%9E%E9%87%8F%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE?sort_id=1717614)
+- [Logstash如何生成联合主键](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/Logstash%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E8%81%94%E5%90%88%E4%B8%BB%E9%94%AE?sort_id=1717654)
+- [logstash如何对敏感配置项加密](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/logstash%E5%A6%82%E4%BD%95%E5%AF%B9%E6%95%8F%E6%84%9F%E9%85%8D%E7%BD%AE%E9%A1%B9%E5%8A%A0%E5%AF%86?sort_id=1728432)
+- [logstash如何支持多开](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/logstash%E5%A6%82%E4%BD%95%E6%94%AF%E6%8C%81%E5%A4%9A%E5%BC%80?sort_id=1728531)
+#### elastic search篇
+- [elastic search的REST服务（直接使用kibana运行）](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/elastic%20search%E7%9A%84REST%E6%9C%8D%E5%8A%A1%EF%BC%88%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8kibana%E8%BF%90%E8%A1%8C%EF%BC%89?sort_id=1725842)
+- [如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
+- [如何防止跳词提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E8%B7%B3%E8%AF%8D%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1733939)
+- [elastic search如何自定义日期格式](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/elastic%20search%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F?sort_id=1734772)
 
-7. swagger入口：http://localhost:8080/swagger-ui.html
 ### 文档间的关系
 - 使用对象存储文档间的关系，仅适用于一对一的场景。因为存储一对多的时候，搜索会出现跨对象的匹配，影响结果的准确性。
 - 嵌套类型可以存储一对多的文档关系，但是把所有子表的数据塞到父表中，会降低系统的性能。子文档的更新需要重建整个索引。
