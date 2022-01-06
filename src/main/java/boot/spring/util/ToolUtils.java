@@ -43,7 +43,7 @@ public class ToolUtils {
     }
 
     /**
-     * 处理关键字
+     * 处理关键字，解决跳词问题
      * @param keywords
      */
     public static String handKeyword(String keywords) {
