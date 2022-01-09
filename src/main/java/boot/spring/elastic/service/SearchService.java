@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.elasticsearch.action.search.SearchResponse;
 
 import boot.spring.pagemodel.ElasticSearchRequest;
+import boot.spring.pagemodel.GeoDistance;
 
 public interface SearchService {
 	/**
@@ -23,4 +24,9 @@ public interface SearchService {
 	 * 搜索全部
 	 */
 	SearchResponse matchAllSearch(String index);
+	
+	/**
+	 * 经纬度搜索
+	 */
+	SearchResponse geoDistanceSearch(String index, GeoDistance geo);
 }

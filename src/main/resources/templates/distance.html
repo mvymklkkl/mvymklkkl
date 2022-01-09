@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Spring boot Mybatis | sougoulog</title>
+<title>Spring boot elastic search | 经纬度搜索</title>
 <!-- Tell the browser to be responsive to screen width -->
 <meta
 	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
@@ -41,12 +41,6 @@
 em {
 	color: red
 }
-pre {outline: 1px solid #ccc; }
- .string { color: green; }
- .number { color: darkorange; }
- .boolean { color: blue; }
- .null { color: magenta; }
- .key { color: red; }
 </style>
 <!-- Google Font -->
 <link rel="stylesheet" href="dist/css/fonts.googleapis.com.css">
@@ -126,17 +120,16 @@ pre {outline: 1px solid #ccc; }
 				<!-- sidebar menu: : style can be found in sidebar.less -->
 				<ul class="sidebar-menu" data-widget="tree">
 					<li class="header">MAIN NAVIGATION</li>
-					<li class="active"><a href="index"> <i class="fa fa-calendar"></i> <span>索引构建</span>
+					<li><a href="index"> <i class="fa fa-calendar"></i> <span>索引构建</span>
 					</a></li>
-					<li class="treeview menu-open"><a href="#"> <i
+					<li class="active treeview menu-open"><a href="#"> <i
 							class="fa fa-search-plus"></i> <span>高级搜索</span> <span
 							class="pull-right-container"> <i
 								class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 						<ul class="treeview-menu">
-							<li><a href="sougoulog"><i
-									class="fa fa-search"></i> 多字段搜索</a></li>
+							<li><a href="sougoulog"><i class="fa fa-search"></i> 多字段搜索</a></li>
 							<li><a href="distance"><i class="fa fa-life-bouy"></i> 经纬度搜索</a></li>
 						</ul></li>
 					<li><a href="analysis"> <i class="fa fa-edit"></i> <span>聚集统计</span>
@@ -154,12 +147,12 @@ pre {outline: 1px solid #ccc; }
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
 				<h1>
-					构建索引 <small>批量导入数据</small>
+					经纬度搜索 <small>根据经纬度坐标和距离半径搜索</small>
 				</h1>
 				<ol class="breadcrumb">
 					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 					<li>高级搜索</li>
-					<li class="active">多字段搜索</li>
+					<li class="active">经纬度搜索</li>
 				</ol>
 			</section>
 
@@ -174,7 +167,8 @@ pre {outline: 1px solid #ccc; }
 							<!-- TABLE: LATEST ORDERS -->
 							<div class="box box-info">
 								<div class="box-header with-border">
-									<h3 class="box-title">构建sougoulog索引结构</h3>
+									<h3 class="box-title">经纬度搜索</h3>
+
 									<div class="box-tools pull-right">
 										<button type="button" class="btn btn-box-tool"
 											data-widget="collapse">
@@ -189,17 +183,13 @@ pre {outline: 1px solid #ccc; }
 								<!-- /.box-header -->
 								<div class="box-body">
 									<div class="col-md-12">
-									<pre id="jsonShow" class="well">
-									</pre>
+									
 									</div>
+								</div>
 								</div>
 							</div>
 							<!-- /.box-body -->
 							<div class="box-footer clearfix">
-								<a href="javascript:void(0)" id="mapping"
-									class="btn btn-sm btn-warning btn-flat pull-left">构建索引结构</a>
-								<a href="javascript:void(0)" id="import"
-									class="btn btn-sm btn-info btn-flat pull-left">批量导入搜狗日志记录</a>
 							</div>
 							<!-- /.box-footer -->
 						</div>
@@ -208,8 +198,6 @@ pre {outline: 1px solid #ccc; }
 					<!-- /.col -->
 
 
-				</div>
-				<!-- /.row -->
 			</section>
 			<!-- /.content -->
 		</div>
@@ -396,11 +384,33 @@ pre {outline: 1px solid #ccc; }
        immediately after the control sidebar -->
 		<div class="control-sidebar-bg"></div>
 
-	</div>
 	<!-- ./wrapper -->
 
 
 
+	<div class="modal modal-success fade" id="modal-success">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">提示</h4>
+				</div>
+				<div class="modal-body">
+					<p>操作成功</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline pull-left"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 
 	<!-- jQuery 3 -->
 	<script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -430,359 +440,11 @@ pre {outline: 1px solid #ccc; }
 	<script src="dist/js/demo.js"></script>
 	<script type="text/javascript">
   $(document).ready(function(){
-  	$("#insertactor").click(function(){
-  		 $.get("/sougoulognumber",function(str){
-	        	var total = str.data;
-	        	total++;
-	        	var json={"key":total,"id":total,"visittime":$("#visittime2").val(),"userid":$("#userid2").val(),"keywords":$("#keywords2").val()
-  				  ,"rank":$("#rank2").val(),"clicknum":$("#clicknum2").val(),"url":$("#url2").val()};
-				   $.ajax({  
-		            url : "/indexSougoulog",  
-		            type : "POST",  
-		            data : JSON.stringify(json), //转JSON字符串  
-		            dataType: 'json',  
-		            contentType:'application/json;charset=UTF-8', //contentType很重要     
-		            success : function(result) {  
-		                //alert("添加成功"+JSON.stringify(result));  
-		                $("#modal-info").modal("hide");
-		                $("#modal-success").modal();
-		            }  
-			     });
-  	});
-  });
   
-  $("#updateactor").click(function(){
-  		var json={"id":$("#id").val(),"visittime":$("#visittime").val(),"userid":$("#userid").val(),"keywords":$("#keywords").val()
-  				  ,"rank":$("#rank").val(),"clicknum":$("#clicknum").val(),"url":$("#url").val()};
-		   $.ajax({  
-            url : "/indexDoc/sougoulog/_doc",  
-            type : "POST",  
-            data : JSON.stringify(json), //转JSON字符串  
-            dataType: 'json',  
-            contentType:'application/json;charset=UTF-8', //contentType很重要     
-            success : function(result) {  
-                $(".actormodal").modal("hide");
-                $("#grid-data").bootgrid("reload");
-                $("#modal-success").modal();
-            }  
-  	
-  	});
-  }); 
   
-   
-   
- var grid =$("#grid-data").bootgrid({
-    ajax:true,
-    url:"/sougoulog",
-    navigation:3,
-    ajaxSettings: {
-        method: "POST",
-        cache: false
-    },	
-        formatters: {
-        "keywords": function(column, row){
-        	var search = "highlight";
-	        var highlightObj = row[search];
-	        var currentKey = column.id;
-	        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-	            return highlightObj[currentKey];
-	        } else {
-	            return row[currentKey];
-	        }
-        },
-        "url": function(column, row){
-        	var search = "highlight";
-	        var highlightObj = row[search];
-	        var currentKey = column.id;
-	        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-	            return highlightObj[currentKey];
-	        } else {
-	            return row[currentKey];
-	        }
-        },
-        "userid": function(column, row){
-        	var search = "highlight";
-	        var highlightObj = row[search];
-	        var currentKey = column.id;
-	        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-	            return highlightObj[currentKey];
-	        } else {
-	            return row[currentKey];
-	        }
-        },
-        "commands": function(column, row)
-        {
-            return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit\" data-row-id=\"" + row.id + "\">编辑<span class=\"glyphicon glyphicon-pencil\"></span></button> "
-            +"<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\'" + row.id + "\'>删除<span class=\"glyphicon glyphicon-trash\"></span></button> "; 
-        }
-    	}
-    }).on("loaded.rs.jquery.bootgrid", function()
-	{
-    /* Executes after data is loaded and rendered */
-	    grid.find(".command-edit").on("click", function(e)
-	    {
-	        $(".actormodal").modal();
-	        $.get("/sougoulog/"+$(this).data("row-id"),function(str){
-	        	$("#rank").val(str.data[0].rank);
-	        	$("#clicknum").val(str.data[0].clicknum);
-	        	$("#userid").val(str.data[0].userid);
-	        	$("#visittime").val(str.data[0].visittime);
-	        	$("#url").val(str.data[0].url);
-	        	$("#keywords").val(str.data[0].keywords);
-	        	$("#id").val(str.data[0].id);
-	        });
-	        
-	    }).end().find(".command-delete").on("click", function(e)
-		    {
-		        $.ajax({  
-			        url : "/indexDocs/sougoulog/_doc/"+$(this).data("row-id"),  
-			        type : "DELETE",  
-			        success : function(result) { 
-			        	alert("删除成功");
-		        		$("#grid-data").bootgrid("reload");
-		        		}
-		    	});
-		    	});
-		    	});
-  
-   			$("#grid-data2").bootgrid({
-			    ajax:true,
-			    url:"/sougoulog?startdate=00:00:00&enddate=00:05:00",
-			    navigation:3,
-			    ajaxSettings: {
-			        method: "POST",
-			        cache: false
-			    },	
-        	formatters: {
-        	"keywords": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        },
-	        "url": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        },
-	        "userid": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        }
-    	}	
-    }).on("loaded.rs.jquery.bootgrid", function()
-	{
-    /* Executes after data is loaded and rendered */
-	    grid.find(".command-edit2").on("click", function(e)
-	    {
-	        $(".actormodal").modal();
-	        $.get("/actors/"+$(this).data("row-id"),function(str){
-	        	$("#fname").val(str.first_name);
-	        	$("#lname").val(str.last_name);
-	        	$("#lupdate").val(str.last_update);
-	        	$("#actorid").val(str.id);
-	        });
-	    }).end().find(".command-delete2").on("click", function(e)
-		    {
-		        $.ajax({  
-			        url : "/actors/"+$(this).data("row-id"),  
-			        type : "DELETE",  
-			        success : function(result) { 
-			        	alert("删除成功");
-		        		$("#grid-data").bootgrid("reload");
-		        		}
-		    	});
-		    	});
-		});
-  
-  $("#grid-data3").bootgrid({
-			    ajax:true,
-			    url:"/sougoulog?startdate=00:05:00&enddate=00:10:00",
-			    navigation:3,
-			    ajaxSettings: {
-			        method: "POST",
-			        cache: false
-			    },	
-        	formatters: {
-        	"keywords": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        },
-	        "url": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        },
-	        "userid": function(column, row){
-	        	var search = "highlight";
-		        var highlightObj = row[search];
-		        var currentKey = column.id;
-		        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-		            return highlightObj[currentKey];
-		        } else {
-		            return row[currentKey];
-		        }
-	        }
-    	}	
-    }).on("loaded.rs.jquery.bootgrid", function()
-	{
-    /* Executes after data is loaded and rendered */
-	    grid.find(".command-edit").on("click", function(e)
-	    {
-	        $(".actormodal").modal();
-	        $.get("/actors/"+$(this).data("row-id"),function(str){
-	        	$("#fname").val(str.first_name);
-	        	$("#lname").val(str.last_name);
-	        	$("#lupdate").val(str.last_update);
-	        	$("#actorid").val(str.id);
-	        });
-	    }).end().find(".command-delete").on("click", function(e)
-		    {
-		        $.ajax({  
-			        url : "/actors/"+$(this).data("row-id"),  
-			        type : "DELETE",  
-			        success : function(result) { 
-			        	alert("删除成功");
-		        		$("#grid-data").bootgrid("reload");
-		        		}
-		    	});
-		    	});
-		});
-  
-   		
-  		$("#add").click(function(){
-  	 		$(".addmodal").modal();
-  	 	});
-  	 	
-  	 	
-  	 	
   });
  
-function jsonShowFn(json){
-                if (!json.match("^\{(.+:.+,*){1,}\}$")) {
-                    return json           //判断是否是json数据，不是直接返回
-                }
 
-                if (typeof json != 'string') {
-                    json = JSON.stringify(json, undefined, 2);
-                }
-                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
-                    var cls = 'number';
-                    if (/^"/.test(match)) {
-                        if (/:$/.test(match)) {
-                            cls = 'key';
-                        } else {
-                            cls = 'string';
-                        }
-                    } else if (/true|false/.test(match)) {
-                        cls = 'boolean';
-                    } else if (/null/.test(match)) {
-                        cls = 'null';
-                    }
-                    return '<span class="' + cls + '">' + match + '</span>';
-                });
-}
-$(document).ready(function(){
-	var json ={
-		  "settings": {
-		    "analysis": {
-		      "filter": {
-		        "my_filter": {
-		          "type": "stop",
-		          "stopwords": ""
-		        }
-		      },
-		      "tokenizer": {
-		        "my_tokenizer": {
-		          "type": "standard",
-		          "max_token_length": "1"
-		        }
-		      },
-		      "analyzer": {
-		        "my_analyzer": {
-		          "filter": "my_filter",
-		          "char_filter": "",
-		          "type": "custom",
-		          "tokenizer": "my_tokenizer"
-		        }
-		      }
-		    }
-		  },
-		  "mappings": {
-		    "_doc": {
-		      "properties": {
-		      	  "id": {
-		            "type": "integer"
-		          },
-		          "clicknum": {
-		            "type": "integer"
-		          },
-		          "keywords": {
-		            "type": "text",
-		            "analyzer": "my_analyzer"
-		          },
-		          "rank": {
-		            "type": "integer"
-		          },
-		          "url": {
-		            "type": "text",
-		            "analyzer": "my_analyzer"
-		          },
-		          "userid": {
-		            "type": "text",
-		            "analyzer": "my_analyzer"
-		          },
-		          "visittime": {
-		            "type": "date",
-		            "format": "HH:mm:ss"
-		          }
-		        
-		      }
-		    }
-		  }
-		};
-		
-	$('#jsonShow').html(jsonShowFn(JSON.stringify(json)));
-	
-	$("#mapping").click(function(){
-		$.get("createIndexMapping",function(){
-			alert("sougoulog索引创建成功");
-		});
-	});
-	
-	$("#import").click(function(){
-		$.get("indexDocs",function(){
-			alert("sougoulog数据导入成功");
-		});
-	});
-});
   </script>
 </body>
 </html>

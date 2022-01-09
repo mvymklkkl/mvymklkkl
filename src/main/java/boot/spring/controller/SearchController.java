@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -27,6 +26,7 @@ import boot.spring.elastic.service.SearchService;
 import boot.spring.pagemodel.DataGrid;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
+import boot.spring.pagemodel.GeoDistance;
 import boot.spring.pagemodel.MSG;
 import boot.spring.pagemodel.QueryCommand;
 import boot.spring.pagemodel.RangeQuery;
@@ -41,16 +41,16 @@ public class SearchController {
 	@Autowired
 	SearchService searchService;
 
-	@Autowired
-	RestHighLevelClient client;
-	
-	@Autowired
-	AggsService aggsService;
 	
 	@RequestMapping(value = "/sougoulog", method = RequestMethod.GET)
 	public String sougoulog() {
 		return "sougoulog";
 	}
+	
+	@RequestMapping(value = "/distance", method = RequestMethod.GET)
+	public String distance() {
+		return "distance";
+	}	
 	
     @ApiOperation("获取一个日志数据")
 	@RequestMapping(value = "/sougoulog/{id}", method = RequestMethod.GET)
@@ -164,64 +164,25 @@ public class SearchController {
 		return resultData;
 	}
 
-	/**
-	 * terms聚集接口
-	 * @param content
-	 * @return
-	 * @throws Exception 
-	 */
-    @ApiOperation("词条聚集")
-	@RequestMapping(value = "/termsAggs", method = RequestMethod.POST)
+	@ApiOperation("经纬度搜索")
+	@RequestMapping(value = "/geosearch", method = RequestMethod.POST)
 	@ResponseBody
-    public ResultData termsAggs(@RequestBody QueryCommand query) throws Exception{
-		ResultData data = aggsService.termsAggs(query);
-		return data;
+	public ResultData geosearch(@RequestBody GeoDistance geo) {
+		// 搜索结果
+		List<Object> data = new ArrayList<Object>();
+		SearchResponse searchResponse = searchService.geoDistanceSearch("shop", geo);
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> map = hit.getSourceAsMap();
+			data.add(map);
+		}
+		ResultData resultData = new ResultData();
+		resultData.setQtime(new Date());
+		resultData.setData(data);
+		resultData.setNumberFound(hits.getTotalHits());
+		resultData.setStart(0);
+		return resultData;
 	}
-    
-	/**
-	 * 范围聚集接口
-	 * @param content
-	 * @return
-	 * @throws Exception 
-	 */
-    @ApiOperation("范围聚集")
-	@RequestMapping(value = "/rangeAggs", method = RequestMethod.POST)
-	@ResponseBody
-    public ResultData rangeAggs(@RequestBody RangeQuery content) throws Exception{
-		ResultData data = aggsService.rangeAggs(content);
-		return data;
-	}    
-	
-	/**
-	 * histogram聚集接口
-	 * @param content
-	 * @return
-	 * @throws Exception 
-	 */
-    @ApiOperation("直方图聚集")
-	@RequestMapping(value = "/histogramAggs", method = RequestMethod.POST)
-	@ResponseBody
-    public ResultData histogramAggs(@RequestBody QueryCommand query) throws Exception{
-		ResultData data = aggsService.histogramAggs(query);
-		return data;
-	}
-	
-	/**
-	 * datehistogram聚集接口
-	 * @param content
-	 * @return
-	 * @throws Exception 
-	 */
-    @ApiOperation("日期直方图聚集")
-	@RequestMapping(value = "/datehistogramAggs", method = RequestMethod.POST)
-	@ResponseBody
-    public ResultData datehistogramAggs(@RequestBody QueryCommand query) throws Exception{
-		ResultData data = aggsService.datehistogramAggs(query);
-		return data;
-	}	
-    
-	@RequestMapping(value = "/analysis", method = RequestMethod.GET)
-    public String analysis() {
-		return "analysis";
-	}    
+
 }

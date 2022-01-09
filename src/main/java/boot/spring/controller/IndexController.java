@@ -2,6 +2,7 @@ package boot.spring.controller;
 
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -17,6 +18,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -274,7 +276,7 @@ public class IndexController {
 			if (start + 1000 <= docs.size()) {
 				end = start + 1000;
 			} else {
-				end = docs.size() - 1;
+				end = docs.size();
 			}
 			List<Map<String, Object>> sublist = docs.subList(start, end);
 			indexService.indexDocs("sougoulog", "_doc", sublist);
@@ -283,6 +285,81 @@ public class IndexController {
 		br.close();
 		return new MSG("index success");
 	}
+
+	@ApiOperation("创建shop索引")
+	@RequestMapping(value="/createShopMapping",method = RequestMethod.GET)
+	@ResponseBody
+	MSG createShopMapping() throws Exception{
+		// 创建shop索引映射
+		boolean exsit = indexService.existIndex("shop");
+		if ( exsit == false ) {
+			XContentBuilder builder = XContentFactory.jsonBuilder();
+			builder.startObject();
+			{
+			  	builder.startObject("mappings");
+			    {
+			    builder.startObject("properties");
+			    {
+			    	builder.startObject("key");
+			        {
+			            builder.field("type", "text");
+			        }
+			        builder.endObject();
+			        builder.startObject("name");
+			        {
+			            builder.field("type", "keyword");
+			        }
+			        builder.endObject();
+			        builder.startObject("location");
+			        {
+			            builder.field("type", "geo_point");
+			        }
+			        builder.endObject();
+			    }
+			    builder.endObject();
+			    }
+		        builder.endObject();
+			}
+			builder.endObject();
+			System.out.println(builder.prettyPrint());
+			indexService.createMapping("shop",builder);
+		}
+		return new MSG("index success");
+	}	
+	
+	@ApiOperation("导入经纬度数据")
+	@RequestMapping(value="/importShops",method = RequestMethod.GET)
+	@ResponseBody
+	MSG importShops() throws Exception{
+		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:shop.txt")));
+		String s;
+		int i = 1;
+		List<Map<String, Object>> docs = new ArrayList<>();
+		while ((s = br.readLine()) != null) {
+			String[] words = s.split(" |\t");
+	        System.out.println(words[0]+" "+words[1]+words[2]+words[3]);
+	        HashMap<String, Object> doc = new HashMap<String, Object>();
+	        doc.put("key", words[0]);
+	        doc.put("name", words[1]);
+	        doc.put("location", new GeoPoint(Double.parseDouble(words[2]), Double.parseDouble(words[3])));
+	        docs.add(doc);
+			i++;
+		}
+		int start = 0;
+		while (start < docs.size()) {
+			int end = 0;
+			if (start + 1000 <= docs.size()) {
+				end = start + 1000;
+			} else {
+				end = docs.size();
+			}
+			List<Map<String, Object>> sublist = docs.subList(start, end);
+			indexService.indexDocs("shop", "_doc", sublist);
+			start += 1000;
+		}
+		br.close();
+		return new MSG("index success");
+	}		
 	
 	@ApiOperation("向索引添加或修改一个文档")
 	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.POST)

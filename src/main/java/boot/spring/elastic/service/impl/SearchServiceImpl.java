@@ -1,6 +1,9 @@
 package boot.spring.elastic.service.impl;
 
+
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +14,11 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -36,6 +41,7 @@ import org.springframework.stereotype.Service;
 import boot.spring.elastic.service.SearchService;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
+import boot.spring.pagemodel.GeoDistance;
 import boot.spring.util.ToolUtils;
 
 
@@ -131,5 +137,28 @@ public class SearchServiceImpl implements SearchService {
 			e.printStackTrace();
 		}
 		return searchResponse;
+	}
+
+
+	@Override
+	public SearchResponse geoDistanceSearch(String index, GeoDistance geo) {
+		 SearchRequest searchRequest = new SearchRequest("shop");
+	        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+	        BoolQueryBuilder builder;
+	        builder = QueryBuilders.boolQuery().must(QueryBuilders.geoDistanceQuery("location")
+	                .point(geo.getLatitude(), geo.getLongitude())
+	                .distance(geo.getDistance(), DistanceUnit.KILOMETERS));
+	        SearchResponse searchResponse = null;
+	        try {
+	            searchSourceBuilder.query(builder);
+	            searchRequest.source(searchSourceBuilder);
+	            searchSourceBuilder.from(0);
+	            searchSourceBuilder.size(10);
+	            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+	        } catch (IOException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        }
+	        return searchResponse;
 	}
 }
