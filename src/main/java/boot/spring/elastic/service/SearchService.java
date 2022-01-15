@@ -28,5 +28,5 @@ public interface SearchService {
 	/**
 	 * 经纬度搜索
 	 */
-	SearchResponse geoDistanceSearch(String index, GeoDistance geo);
+	SearchResponse geoDistanceSearch(String index, GeoDistance geo, Integer pagenum, Integer pagesize);
 }

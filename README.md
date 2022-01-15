@@ -4,7 +4,7 @@
 Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特性：
 
 1. 全文检索的实现主要包括构建索引、高级搜索、聚集统计、数据建模四个模块；
-2. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。使用IK分词器虽然能解决一些中文分词的问题，但是由于分词的粒度不够细，导致很多词语可能搜不到。例如索引里有词语“武汉”，但是搜索汉口时，搜不出来，因此，我们采用把文本拆分到最细粒度来进行分词，从而最大限度地搜索到相关结果。详情参考：[如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
+2. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。使用IK分词器虽然能解决一些中文分词的问题，但是由于粉刺的粒度不够细，导致很多词语可能搜不到。例如索引里有词语“武汉”，但是搜索汉口时，搜不出来，因此，我们采用把文本拆分到最细粒度来进行分词，从而最大限度地搜索到相关结果。详情参考：[如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
 3. 高级搜索实现了以下几种：
     - 多字段搜索,指定多个字段进行搜索:query_string，支持高亮显示
     - 经纬度搜索:distanceQuery
@@ -26,13 +26,12 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 - [如何防止跳词提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E8%B7%B3%E8%AF%8D%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1733939)
 - [elastic search如何自定义日期格式](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/elastic%20search%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F?sort_id=1734772)
 - [索引的doc value和field data的区别和联系](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E7%B4%A2%E5%BC%95%E7%9A%84doc%20value%E5%92%8Cfield%20data%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB?sort_id=1762216)
-- [如何修改es的堆内存大小加快索引查询性能](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9es%E7%9A%84%E5%A0%86%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E5%8A%A0%E5%BF%AB%E7%B4%A2%E5%BC%95%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD?sort_id=1778490)
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1205/084028_e7962b37_1110335.jpeg "微信图片_20191205083903.jpg")
+
 ### 文档间的关系
-- 使用对象存储文档间的关系，仅适用于一对一的场景。因为存储一对多的时候，搜索会出现跨对象的匹配，影响结果的准确性,一般不使用。
+- 使用对象存储文档间的关系，仅适用于一对一的场景。因为存储一对多的时候，搜索会出现跨对象的匹配，影响结果的准确性。
 - 嵌套类型可以存储一对多的文档关系，但是把所有子表的数据塞到父表中，会降低系统的性能。子文档的更新需要重建整个索引。
-- 定义父子关系用于处理一对多的文档关系，在子文档中添加一个_parent字段指向父文档，相当于一个外键。（es5.x）由于父子文档会被路由到
-  同一个分片，查询时做文档连接也很快。到了es6.0以后，最多只能有一个type，_parent字段无法再用了，改为使用join来实现关联操作。
+- 定义父子关系用于处理一对多的文档关系，在子文档中添加一个_parent字段指向父文档，相当于一个外键。父子文档会被路由到
+  同一个分片，查询时需要将文档进行连接，效率低于嵌套，但是修改文档时索引不用重建。
 - 反规范化通过复制数据来避免表连接，但是需要更多空间。反规范化是唯一能用于解决多对多的表关系，可以将多对多转化为多个
   一对多。由于数据被复制，导致聚集和查询计算结果拥有重复数据导致结果不准确。
 ### 集群搭建

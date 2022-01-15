@@ -20,8 +20,6 @@
 <!-- jvectormap -->
 <link rel="stylesheet"
 	href="bower_components/jvectormap/jquery-jvectormap.css">
-<!-- bootgrid -->
-<link rel="stylesheet" href="dist/css/jquery.bootgrid.min.css" />
 <!-- bootstrap datepicker -->
 <link rel="stylesheet"
 	href="bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
@@ -30,7 +28,8 @@
 <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
 <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
-
+<!-- DataTables -->
+<link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -130,7 +129,7 @@ em {
 					</a>
 						<ul class="treeview-menu">
 							<li><a href="sougoulog"><i class="fa fa-search"></i> 多字段搜索</a></li>
-							<li><a href="distance"><i class="fa fa-life-bouy"></i> 经纬度搜索</a></li>
+							<li class="active"><a href="distance"><i class="fa fa-life-bouy"></i> 经纬度搜索</a></li>
 						</ul></li>
 					<li><a href="analysis"> <i class="fa fa-edit"></i> <span>聚集统计</span>
 					</a></li>
@@ -183,7 +182,31 @@ em {
 								<!-- /.box-header -->
 								<div class="box-body">
 									<div class="col-md-12">
-									
+									<form class="form-horizontal">
+							              <div class="box-body">
+							                <div class="form-group">
+							                  <label for="inputEmail3" class="col-sm-4 control-label">圆心经度116.4107,纬度39.96820</label>
+							                  <div class="col-sm-6">
+							                    <input type="text" class="form-control" id="keyword" placeholder="搜索半径（公里）">
+							                  </div>
+							                  <div class="col-sm-2">
+							                  	<button type="button" class="btn btn-primary" onclick="search()">Submit</button>
+							                  </div>
+							                </div>
+							              </div>
+							            </form>
+									<table id="myTable" class="table table-condensed table-hover table-striped">
+						                <thead>
+						                    <tr>
+						                        <th>key</th>
+						                        <th>name</th>
+						                        <th>longitude</th>
+						                        <th>latitude</th>
+						                    </tr>
+						                </thead>
+						                <tbody>
+						                </tbody>
+						            </table>
 									</div>
 								</div>
 								</div>
@@ -420,6 +443,9 @@ em {
 	<script src="bower_components/fastclick/lib/fastclick.js"></script>
 	<!-- AdminLTE App -->
 	<script src="dist/js/adminlte.min.js"></script>
+	<!-- DataTables -->
+	<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 	<!-- Sparkline -->
 	<script
 		src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
@@ -434,17 +460,55 @@ em {
 		src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 	<!-- ChartJS -->
 	<script src="bower_components/chart.js/Chart.js"></script>
-	<!-- bootgrid -->
-	<script src="dist/js/jquery.bootgrid.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="dist/js/demo.js"></script>
 	<script type="text/javascript">
-  $(document).ready(function(){
-  
-  
-  });
- 
-
+  		let table;
+        $(document).ready( function () {
+            table = $('#myTable').DataTable({
+            	'searching' : false,
+            	'serverSide': true,
+                'paging'      : true,
+      			'lengthChange': false,
+      			"processing": true,
+                ajax: {
+                    url: '/geosearch',
+                    type: "POST",
+                    contentType:"application/json;charset=utf-8",
+                    dataType:"json",
+                    data: function () {
+                       let pagenum;
+	                   let pagesize;
+	                    if (table) {
+	                        pagenum = table.page.info().page + 1;
+	                        pagesize = table.page.info().length;
+	                    } else {
+	                        pagenum = 1;
+	                        pagesize = 10;
+	                    }
+                       var distance = $("#keyword").val();
+                       let temp = $.extend( {},{
+                        "distance": distance||999999,
+                        "longitude":"116.4107",
+                        "latitude":"39.96820",
+                        pagenum,
+                        pagesize
+                       });
+                       return JSON.stringify(temp);
+                    },
+                    dataSrc: 'data',
+                },
+                columns:[
+                    {data:"key"},
+                    {data:"name"},
+                    {data:"location.lon"},
+                    {data:"location.lat"}
+                ]
+            });
+        });
+        function search() {
+           table.ajax.reload();
+        }
   </script>
 </body>
 </html>

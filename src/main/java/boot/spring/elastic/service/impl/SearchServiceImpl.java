@@ -141,7 +141,7 @@ public class SearchServiceImpl implements SearchService {
 
 
 	@Override
-	public SearchResponse geoDistanceSearch(String index, GeoDistance geo) {
+	public SearchResponse geoDistanceSearch(String index, GeoDistance geo, Integer pagenum, Integer pagesize) {
 		 SearchRequest searchRequest = new SearchRequest("shop");
 	        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 	        BoolQueryBuilder builder;
@@ -152,8 +152,9 @@ public class SearchServiceImpl implements SearchService {
 	        try {
 	            searchSourceBuilder.query(builder);
 	            searchRequest.source(searchSourceBuilder);
-	            searchSourceBuilder.from(0);
-	            searchSourceBuilder.size(10);
+	            int start = (pagenum - 1) * pagesize;
+	            searchSourceBuilder.from(start);
+	            searchSourceBuilder.size(pagesize);
 	            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 	        } catch (IOException e) {
 	            // TODO Auto-generated catch block

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import boot.spring.elastic.service.AggsService;
 import boot.spring.elastic.service.SearchService;
 import boot.spring.pagemodel.DataGrid;
+import boot.spring.pagemodel.DataTable;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
 import boot.spring.pagemodel.GeoDistance;
@@ -167,22 +169,23 @@ public class SearchController {
 	@ApiOperation("经纬度搜索")
 	@RequestMapping(value = "/geosearch", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultData geosearch(@RequestBody GeoDistance geo) {
+	public DataTable<Object> geosearch(@RequestBody GeoDistance geo) {
 		// 搜索结果
 		List<Object> data = new ArrayList<Object>();
-		SearchResponse searchResponse = searchService.geoDistanceSearch("shop", geo);
+		SearchResponse searchResponse = searchService.geoDistanceSearch("shop", geo, geo.getPagenum(), geo.getPagesize());
 		SearchHits hits = searchResponse.getHits();
 		SearchHit[] searchHits = hits.getHits();
 		for (SearchHit hit : searchHits) {
 			Map<String, Object> map = hit.getSourceAsMap();
 			data.add(map);
 		}
-		ResultData resultData = new ResultData();
-		resultData.setQtime(new Date());
-		resultData.setData(data);
-		resultData.setNumberFound(hits.getTotalHits());
-		resultData.setStart(0);
-		return resultData;
+		DataTable<Object> grid = new DataTable<Object>();
+		grid.setDraw(UUID.randomUUID().toString());
+		grid.setRecordsFiltered(hits.getTotalHits());
+		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setData(data);
+		grid.setLength(geo.getPagesize());
+		return grid;
 	}
 
 }

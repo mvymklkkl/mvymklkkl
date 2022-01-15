@@ -9,6 +9,10 @@ public class GeoDistance {
 	
 	// 检索半径
 	Double distance;
+	
+	Integer pagenum;
+	
+	Integer pagesize;
 
 	public Double getLongitude() {
 		return longitude;
@@ -32,6 +36,22 @@ public class GeoDistance {
 
 	public void setDistance(Double distance) {
 		this.distance = distance;
+	}
+
+	public Integer getPagenum() {
+		return pagenum;
+	}
+
+	public void setPagenum(Integer pagenum) {
+		this.pagenum = pagenum;
+	}
+
+	public Integer getPagesize() {
+		return pagesize;
+	}
+
+	public void setPagesize(Integer pagesize) {
+		this.pagesize = pagesize;
 	}
 	
 }
