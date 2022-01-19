@@ -128,7 +128,7 @@ pre {outline: 1px solid #ccc; }
 					<li class="header">MAIN NAVIGATION</li>
 					<li class="active"><a href="index"> <i class="fa fa-calendar"></i> <span>索引构建</span>
 					</a></li>
-					<li class="treeview menu-open"><a href="#"> <i
+					<li class="treeview"><a href="#"> <i
 							class="fa fa-search-plus"></i> <span>高级搜索</span> <span
 							class="pull-right-container"> <i
 								class="fa fa-angle-left pull-right"></i>
@@ -174,7 +174,7 @@ pre {outline: 1px solid #ccc; }
 							<!-- TABLE: LATEST ORDERS -->
 							<div class="box box-info">
 								<div class="box-header with-border">
-									<h3 class="box-title">构建sougoulog索引结构</h3>
+									<h3 class="box-title">建立索引并导入数据</h3>
 									<div class="box-tools pull-right">
 										<button type="button" class="btn btn-box-tool"
 											data-widget="collapse">
@@ -188,20 +188,13 @@ pre {outline: 1px solid #ccc; }
 								</div>
 								<!-- /.box-header -->
 								<div class="box-body">
-									<div class="col-md-12">
-									<pre id="jsonShow" class="well">
-									</pre>
-									</div>
+									<button type="button" id="mapping" class="btn btn-primary">构建搜狗日志索引结构</button>
+									<button type="button" id="import" class="btn btn-primary">批量导入搜狗日志记录</button>
+									<button type="button" id="distancemapping" class="btn btn-info">构建经纬度索引结构</button>
+									<button type="button" id="importdistance" class="btn btn-info">批量导入经纬度记录</button>
+								
 								</div>
 							</div>
-							<!-- /.box-body -->
-							<div class="box-footer clearfix">
-								<a href="javascript:void(0)" id="mapping"
-									class="btn btn-sm btn-warning btn-flat pull-left">构建索引结构</a>
-								<a href="javascript:void(0)" id="import"
-									class="btn btn-sm btn-info btn-flat pull-left">批量导入搜狗日志记录</a>
-							</div>
-							<!-- /.box-footer -->
 						</div>
 						<!-- /.box -->
 					</div>
@@ -782,6 +775,20 @@ $(document).ready(function(){
 			alert("sougoulog数据导入成功");
 		});
 	});
+	
+	$("#distancemapping").click(function(){
+		$.get("createShopMapping",function(){
+			alert("经纬度索引构建成功");
+		});
+	});
+	
+	$("#importdistance").click(function(){
+		$.get("importShops",function(){
+			alert("经纬度数据导入成功");
+		});
+	});
+	
+	
 });
   </script>
 </body>
