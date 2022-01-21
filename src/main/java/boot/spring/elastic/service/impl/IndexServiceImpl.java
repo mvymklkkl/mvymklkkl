@@ -41,7 +41,6 @@ public class IndexServiceImpl implements IndexService {
 		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("key")).source(doc); 
 		try {
 		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
-		    System.out.println(response.getIndex());
 		} catch(ElasticsearchException e ) {
 		    if (e.status() == RestStatus.CONFLICT) {
 		    	System.out.println("写入索引产生冲突"+e.getDetailedMessage());

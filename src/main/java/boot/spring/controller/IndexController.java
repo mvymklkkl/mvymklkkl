@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 
 import boot.spring.elastic.service.IndexService;
 import boot.spring.pagemodel.MSG;
+import boot.spring.po.Country;
 import boot.spring.po.Sougoulog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -327,7 +328,7 @@ public class IndexController {
 		return new MSG("index success");
 	}	
 	
-	@ApiOperation("导入经纬度数据")
+	@ApiOperation("导入shop经纬度数据")
 	@RequestMapping(value="/importShops",method = RequestMethod.GET)
 	@ResponseBody
 	MSG importShops() throws Exception{
@@ -381,5 +382,114 @@ public class IndexController {
 		}
 	}	
 
+	@ApiOperation("创建城市索引")
+	@RequestMapping(value="/createCityMapping",method = RequestMethod.GET)
+	@ResponseBody
+	MSG createCityMapping() throws Exception{
+		// 创建shop索引映射
+		boolean exsit = indexService.existIndex("city");
+		if ( exsit == false ) {
+			XContentBuilder builder = XContentFactory.jsonBuilder();
+			builder.startObject();
+			{
+			  	builder.startObject("mappings");
+			    {
+			    builder.startObject("properties");
+			    {
+			    	builder.startObject("key");
+			        {
+			            builder.field("type", "text");
+			        }
+			        builder.endObject();
+			        builder.startObject("cityname");
+			        {
+			            builder.field("type", "text");
+			        }
+			        builder.endObject();
+			        builder.startObject("lastupdate");
+			        {
+			        	builder.field("type", "date");
+			            builder.field("format", "yyyy-MM-dd HH:mm:ss");
+			        }
+			        builder.endObject();
+			        builder.startObject("country");
+			        {
+			            builder.field("type", "nested");
+			            builder.startObject("properties");
+			            {
+			            	builder.startObject("countryid");
+					        {
+					            builder.field("type", "text");
+					        }
+					        builder.endObject();
+					        builder.startObject("countryname");
+					        {
+					            builder.field("type", "text");
+					        }
+					        builder.endObject();
+					        builder.startObject("lastupdate");
+					        {
+					            builder.field("type", "date");
+					            builder.field("format", "yyyy-MM-dd HH:mm:ss");
+					        }
+					        builder.endObject();
+			            }
+			            builder.endObject();
+			        }
+			        
+			        builder.endObject();
+			    }
+			    builder.endObject();
+			    }
+		        builder.endObject();
+			}
+			builder.endObject();
+			indexService.createMapping("city",builder);
+		}
+		return new MSG("index success");
+	}	
 	
+	@ApiOperation("导入城市数据")
+	@RequestMapping(value="/importCitys",method = RequestMethod.GET)
+	@ResponseBody
+	MSG importCitys() throws Exception{
+		BufferedReader countryreader = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:country.txt")));
+		String line;
+		int k = 1;
+		List<Country> countrys = new ArrayList<>();
+		while ((line = countryreader.readLine()) != null) {
+			String[] words = line.split(";");
+	        Country country = new Country();
+	        country.setCountry_id(words[0]);
+	        country.setCountry(words[1]);
+	        country.setLast_update(words[2]);
+	        countrys.add(country);
+			k++;
+		}
+		countryreader.close();
+		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:city.txt")));
+		String s;
+		int i = 1;
+		List<Map<String, Object>> docs = new ArrayList<>();
+		while ((s = br.readLine()) != null) {
+			String[] words = s.split(";");
+	        HashMap<String, Object> doc = new HashMap<String, Object>();
+	        doc.put("key", words[0]);
+	        doc.put("cityname", words[1]);
+	        doc.put("lastupdate", words[3]);
+	        int temp = Integer.parseInt(words[2])-1;
+	        String countryname = countrys.get(temp).getCountry();
+	        String date = countrys.get(temp).getLast_update();
+	        HashMap<String, Object> countrymap = new HashMap<String, Object>();
+	        countrymap.put("countryid", words[2]);
+	        countrymap.put("countryname", countryname);
+	        countrymap.put("lastupdate", date);
+	        doc.put("country", countrymap);
+	        docs.add(doc);
+			i++;
+		}
+		indexService.indexDocs("city", "_doc", docs);
+		br.close();
+		return new MSG("index success");
+	}			
 }
