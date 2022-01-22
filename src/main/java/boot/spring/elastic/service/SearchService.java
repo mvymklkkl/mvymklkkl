@@ -29,4 +29,9 @@ public interface SearchService {
 	 * 经纬度搜索
 	 */
 	SearchResponse geoDistanceSearch(String index, GeoDistance geo, Integer pagenum, Integer pagesize);
+	
+	/**
+	 * 搜索嵌套对象
+	 */
+	SearchResponse matchNestedObjectSearch(String path, String index, String field, String value, Integer pagenum, Integer pagesize);
 }

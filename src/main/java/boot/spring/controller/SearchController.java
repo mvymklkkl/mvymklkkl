@@ -53,6 +53,11 @@ public class SearchController {
 	public String distance() {
 		return "distance";
 	}	
+
+	@RequestMapping(value = "/city", method = RequestMethod.GET)
+	public String city() {
+		return "city";
+	}
 	
     @ApiOperation("获取一个日志数据")
 	@RequestMapping(value = "/sougoulog/{id}", method = RequestMethod.GET)
@@ -188,4 +193,54 @@ public class SearchController {
 		return grid;
 	}
 
+	
+	
+	@ApiOperation("分页查询城市索引-嵌套父文档")
+	@RequestMapping(value = "/city", method = RequestMethod.POST)
+	@ResponseBody
+	public DataGrid<Object> listCitys(@RequestParam(value="current") int current, @RequestParam(value="rowCount") int rowCount
+			,@RequestParam(value="searchPhrase") String searchPhrase) {
+		DataGrid<Object> grid = new DataGrid<Object>();
+		List<Object> data = new ArrayList<>();
+		ElasticSearchRequest request = new ElasticSearchRequest();
+		QueryCommand query = new QueryCommand();
+		query.setIndexname("city");
+		if (StringUtils.isBlank(searchPhrase)) {
+			query.setKeyWords("*");
+		} else {
+			query.setKeyWords(searchPhrase);
+		}
+		query.setRows(rowCount);
+		query.setStart((current-1)*rowCount);
+		request.setQuery(query);
+		SearchResponse searchResponse;
+		if (StringUtils.isBlank(searchPhrase)) {
+			searchResponse = searchService.query_string(request);
+		} else {
+			searchResponse = searchService.matchNestedObjectSearch("country", "city", "country.countryname", searchPhrase, current, rowCount);
+		}
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> highlights = new HashMap<String, Object>();
+			Map<String, Object> map = hit.getSourceAsMap();
+			// 获取高亮结果
+			Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+			for (Map.Entry<String, HighlightField> entry : highlightFields.entrySet()) {
+				String mapKey = entry.getKey();
+				HighlightField mapValue = entry.getValue();
+				Text[] fragments = mapValue.fragments();
+				String fragmentString = fragments[0].string();
+				highlights.put(mapKey, fragmentString);
+			}
+			map.put("highlight", highlights);
+			data.add(map);
+		}
+		grid.setCurrent(current);
+		grid.setRowCount(rowCount);
+		grid.setRows(data);
+		grid.setTotal(hits.getTotalHits());
+		return grid;
+	}	
+	
 }

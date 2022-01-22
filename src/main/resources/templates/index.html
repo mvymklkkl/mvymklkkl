@@ -141,9 +141,15 @@ pre {outline: 1px solid #ccc; }
 						</ul></li>
 					<li><a href="analysis"> <i class="fa fa-edit"></i> <span>聚集统计</span>
 					</a></li>
-					<li><a href="modal"> <i class="fa fa-group"></i> <span>父子关系</span>
-
-					</a></li>
+					<li class=" treeview"><a href="#"> <i
+							class="fa fa-group"></i> <span>父子关系</span> <span
+							class="pull-right-container"> <i
+								class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+						<ul class="treeview-menu">
+							<li><a href="city"><i class="fa fa-search"></i> 嵌套对象</a></li>
+						</ul></li>
 				</ul>
 			</section>
 			<!-- /.sidebar -->
@@ -192,7 +198,8 @@ pre {outline: 1px solid #ccc; }
 									<button type="button" id="import" class="btn btn-primary">批量导入搜狗日志记录</button>
 									<button type="button" id="distancemapping" class="btn btn-info">构建经纬度索引结构</button>
 									<button type="button" id="importdistance" class="btn btn-info">批量导入经纬度记录</button>
-								
+									<button type="button" id="nestedmapping" class="btn btn-info">构建嵌套对象索引结构</button>
+									<button type="button" id="nestedimport" class="btn btn-info">批量导入嵌套对象记录</button>
 								</div>
 							</div>
 						</div>
@@ -788,6 +795,17 @@ $(document).ready(function(){
 		});
 	});
 	
+	$("#nestedmapping").click(function(){
+		$.get("createCityMapping",function(){
+			alert("嵌套对象索引构建成功");
+		});
+	});
+	
+	$("#nestedimport").click(function(){
+		$.get("importCitys",function(){
+			alert("嵌套对象数据导入成功");
+		});
+	});	
 	
 });
   </script>

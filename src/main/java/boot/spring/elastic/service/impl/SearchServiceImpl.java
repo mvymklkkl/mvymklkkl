@@ -10,12 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -161,5 +163,30 @@ public class SearchServiceImpl implements SearchService {
 	            e.printStackTrace();
 	        }
 	        return searchResponse;
+	}
+	
+	@Override
+	public SearchResponse matchNestedObjectSearch(String path, String index, String field, String value, Integer pagenum, Integer pagesize) {
+		SearchRequest searchRequest = new SearchRequest(index);
+		BoolQueryBuilder builder = QueryBuilders.boolQuery()
+				.must(QueryBuilders.nestedQuery(path, QueryBuilders.matchQuery(field, value), ScoreMode.None));
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(builder);
+		int start = (pagenum - 1) * pagesize;
+        searchSourceBuilder.from(start);
+        searchSourceBuilder.size(pagesize);
+        // 处理高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("*");
+        searchSourceBuilder.highlighter(highlightBuilder);
+		searchRequest.source(searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			 searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return searchResponse;
 	}
 }
