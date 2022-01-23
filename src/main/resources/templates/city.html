@@ -442,9 +442,9 @@ em {
 		        "commands": function(column, row){
 		        	var search = "highlight";
 			        var highlightObj = row[search];
-			        var currentKey = column.key;
+			        var currentKey = "country.countryname";
 			        if ( Object.keys(highlightObj).indexOf(currentKey) >= 0 ) {
-			            return row.highlight.country.countryname;
+			            return highlightObj[currentKey];
 			        } else {
 			            return row.country.countryname;
 			        }
