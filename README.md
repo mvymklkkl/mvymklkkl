@@ -57,8 +57,13 @@ gateway.recover_after_nodes: 3
 
 ### 效果图
 
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0823/105906_0e51ea07_1110335.png "1.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111304_8d091e1e_1110335.gif "s.gif")
 
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111317_5439fa80_1110335.png "1576119888(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111324_33535516_1110335.png "1576119932(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111331_2a60556d_1110335.png "1576119952(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111345_cfef32ce_1110335.png "1576119967(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111354_469fd717_1110335.png "1576120008(1).png")
 ### 附录：个人作品索引目录（持续更新）
 
 #### 基础篇:职业化，从做好OA系统开始
