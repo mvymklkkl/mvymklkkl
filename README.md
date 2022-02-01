@@ -4,7 +4,7 @@
 Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特性：
 
 1. 全文检索的实现主要包括构建索引、高级搜索、聚集统计、数据建模四个模块；
-2. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。使用IK分词器虽然能解决一些中文分词的问题，但是由于分词的粒度不够细，导致很多词语可能搜不到。例如索引里有词语“武汉”，但是搜索汉口时，搜不出来，因此，我们采用把文本拆分到最细粒度来进行分词，从而最大限度地搜索到相关结果。详情参考：[如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
+2. 使用 **elasticsearch-rest-high-level-client** 来操作elasticsearch，构建索引时，根据实际情况考虑哪些字段需要分词，哪些不需要分词，这会影响搜索结果。使用IK分词器虽然能解决一些中文分词的问题，但是由于分词的粒度不够细，导致很多词语可能搜不到。例如索引里有词语“三国无双”，但是搜索“国无”时，搜不出来，因此，我们采用把文本拆分到最细粒度来进行分词，从而最大限度地搜索到相关结果。详情参考：[如何手动控制分词粒度提高搜索的准确性](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%88%86%E8%AF%8D%E7%B2%92%E5%BA%A6%E6%8F%90%E9%AB%98%E6%90%9C%E7%B4%A2%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7?sort_id=1727039)
 3. 高级搜索实现了以下几种：
     - 多字段搜索,指定多个字段进行搜索:query_string，支持高亮显示
     - 经纬度搜索:distanceQuery
