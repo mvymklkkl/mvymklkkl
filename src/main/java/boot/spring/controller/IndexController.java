@@ -425,6 +425,15 @@ public class IndexController {
 					        builder.startObject("countryname");
 					        {
 					            builder.field("type", "text");
+					            builder.startObject("fields");
+						        {
+						        	builder.startObject("keyword");
+						        	{
+						        		builder.field("type", "keyword");
+						        	}
+						        	builder.endObject();
+						        }
+						        builder.endObject();
 					        }
 					        builder.endObject();
 					        builder.startObject("lastupdate");

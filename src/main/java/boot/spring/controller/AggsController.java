@@ -76,6 +76,14 @@ public class AggsController {
 		return data;
 	}	
     
+    @ApiOperation("按国家嵌套对象词条聚集")
+	@RequestMapping(value = "/nestedTermsAggs", method = RequestMethod.GET)
+	@ResponseBody
+    public ResultData nestedTermsAggs() throws Exception{
+		ResultData data = aggsService.nestedTermsAggs();
+		return data;
+	}    
+    
 	@RequestMapping(value = "/analysis", method = RequestMethod.GET)
     public String analysis() {
 		return "analysis";

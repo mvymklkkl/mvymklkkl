@@ -16,10 +16,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.HistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.DateRangeAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -46,8 +49,8 @@ public class AggsServiceImpl implements AggsService {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(10)
-                .order(BucketOrder.key(true));
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(100)
+                .order(BucketOrder.count(true));
         searchSourceBuilder.query(queryBuilder).aggregation(aggregation);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -194,6 +197,34 @@ public class AggsServiceImpl implements AggsService {
         resultData.setStart(content.getStart());
         return resultData;
     }
+
+	@Override
+	public ResultData nestedTermsAggs() throws Exception {
+		SearchRequest searchRequest = new SearchRequest("city");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
+        NestedAggregationBuilder aggregation = AggregationBuilders.nested("nestedAggs", "country")
+        		.subAggregation(AggregationBuilders.terms("groupbycountry")
+        						.field("country.countryname.keyword").size(100)
+        						.order(BucketOrder.count(false)));
+        searchSourceBuilder.query(queryBuilder).aggregation(aggregation);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        Nested result = searchResponse.getAggregations().get("nestedAggs");
+        Terms groupbycountry = result.getAggregations().get("groupbycountry");
+        List<? extends Terms.Bucket> bucketList = groupbycountry.getBuckets();
+        List<BucketResult> list = new ArrayList<>();
+        for (Terms.Bucket bucket : bucketList) {
+            BucketResult br = new BucketResult(bucket.getKeyAsString(), bucket.getDocCount());
+            list.add(br);
+        }
+        ResultData resultData = new ResultData();
+        resultData.setQtime(new Date());
+        resultData.setData(list.subList(0, 10));
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setStart(0);
+        return resultData;
+	}
 
 
 }
