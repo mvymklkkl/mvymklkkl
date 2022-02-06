@@ -15,6 +15,7 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -49,6 +50,8 @@ public class IndexServiceImpl implements IndexService {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	@Override
 	public void indexDocs(String indexName, String indexType, List<Map<String, Object>> docs) {
@@ -129,5 +132,28 @@ public class IndexServiceImpl implements IndexService {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	@Override
+	public void updateDoc(String indexName, String indexType, Map<String, Object> doc) {
+		UpdateRequest request = new UpdateRequest(indexName, indexType, (String) doc.get("key")).upsert(doc).doc(doc);
+		request.docAsUpsert(true);
+		try {
+			UpdateResponse updateResponse = client.update(request, RequestOptions.DEFAULT);
+			long version = updateResponse.getVersion();
+			
+			if (updateResponse.getResult() == DocWriteResponse.Result.CREATED) {
+				System.out.println("insert success, version is " + version);
+			} else if (updateResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+				System.out.println("update success, version is " + version);
+			} else if (updateResponse.getResult() == DocWriteResponse.Result.DELETED) {
+			    
+			} else if (updateResponse.getResult() == DocWriteResponse.Result.NOOP) {
+			    
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -362,11 +362,19 @@ public class IndexController {
 		return new MSG("index success");
 	}		
 	
-	@ApiOperation("向索引添加或修改一个文档")
+	@ApiOperation("向索引添加一个文档")
 	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.POST)
 	@ResponseBody
 	MSG indexDoc(@PathVariable String indexname, @PathVariable String indextype, @RequestBody Map<String, Object> jsonMap){
 		indexService.indexDoc(indexname, indextype, jsonMap);
+		return new MSG("index success");
+	}
+	
+	@ApiOperation("向索引修改一个文档")
+	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.PUT)
+	@ResponseBody
+	MSG updateIndexDoc(@PathVariable String indexname, @PathVariable String indextype, @RequestBody Map<String, Object> jsonMap){
+		indexService.updateDoc(indexname, indextype, jsonMap);
 		return new MSG("index success");
 	}	
 	

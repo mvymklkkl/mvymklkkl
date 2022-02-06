@@ -37,6 +37,14 @@ public interface IndexService {
 	 * @return
 	 */
 	int deleteDoc(String indexName, String indexType, String id);
+	
+	/**
+	 * 修改一篇文档
+	 * @param indexName
+	 * @param indexType
+	 * @param doc
+	 */
+	void updateDoc(String indexName, String indexType, Map<String, Object> doc);
 	/**
 	 * 判断一个索引是否存在
 	 * @param indexname
