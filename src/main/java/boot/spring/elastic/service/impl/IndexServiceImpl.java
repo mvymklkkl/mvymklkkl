@@ -136,7 +136,7 @@ public class IndexServiceImpl implements IndexService {
 	
 	@Override
 	public void updateDoc(String indexName, String indexType, Map<String, Object> doc) {
-		UpdateRequest request = new UpdateRequest(indexName, indexType, (String) doc.get("key")).upsert(doc).doc(doc);
+		UpdateRequest request = new UpdateRequest(indexName, indexType, (String) doc.get("key")).doc(doc);
 		request.docAsUpsert(true);
 		try {
 			UpdateResponse updateResponse = client.update(request, RequestOptions.DEFAULT);
