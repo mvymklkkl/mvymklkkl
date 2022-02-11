@@ -9,11 +9,17 @@ import boot.spring.pagemodel.GeoDistance;
 
 public interface SearchService {
 	/**
-	 * 多字段搜索
+	 * 多字段搜索-普通分页
 	 * @param request
 	 * @return
 	 */
 	SearchResponse query_string(ElasticSearchRequest request);
+	/**
+	 * 多字段搜索-滚动分页
+	 * @param request
+	 * @return
+	 */
+	SearchResponse scrollquerystring(ElasticSearchRequest request);
 	
 	/**
 	 * 精准搜索

@@ -139,7 +139,7 @@ public class SearchController {
 	}	
 	
 
-	@ApiOperation("query_string全字段查找")
+	@ApiOperation("query_string全字段查找-普通分页版")
 	@RequestMapping(value = "/query_string", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultData query_string(@RequestBody ElasticSearchRequest request) {
@@ -170,6 +170,40 @@ public class SearchController {
 		resultData.setStart(request.getQuery().getStart());
 		return resultData;
 	}
+	
+	@ApiOperation("query_string全字段查找-滚动分页版")
+	@RequestMapping(value = "/query_string/scroll", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultData scrollquery_string(@RequestBody ElasticSearchRequest request) {
+		// 搜索结果
+		List<Object> data = new ArrayList<Object>();
+		SearchResponse searchResponse = searchService.scrollquerystring(request);
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		String scrollid = searchResponse.getScrollId();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> highlights = new HashMap<String, Object>();
+			Map<String, Object> map = hit.getSourceAsMap();
+			// 获取高亮结果
+			Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+			for (Map.Entry<String, HighlightField> entry : highlightFields.entrySet()) {
+				String mapKey = entry.getKey();
+				HighlightField mapValue = entry.getValue();
+				Text[] fragments = mapValue.fragments();
+				String fragmentString = fragments[0].string();
+				highlights.put(mapKey, fragmentString);
+			}
+			map.put("highlight", highlights);
+			data.add(map);
+		}
+		ResultData resultData = new ResultData();
+		resultData.setQtime(new Date());
+		resultData.setData(data);
+		resultData.setNumberFound(hits.getTotalHits());
+		resultData.setStart(request.getQuery().getStart());
+		resultData.setScrollid(scrollid);
+		return resultData;
+	}	
 
 	@ApiOperation("经纬度搜索")
 	@RequestMapping(value = "/geosearch", method = RequestMethod.POST)

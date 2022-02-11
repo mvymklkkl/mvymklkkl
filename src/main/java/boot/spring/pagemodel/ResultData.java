@@ -11,6 +11,8 @@ public class ResultData {
 	Date qtime;
 	
 	Object data;
+	
+	String scrollid;
 
 	public Long getNumberFound() {
 		return NumberFound;
@@ -43,6 +45,14 @@ public class ResultData {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public String getScrollid() {
+		return scrollid;
+	}
+
+	public void setScrollid(String scrollid) {
+		this.scrollid = scrollid;
 	}
     
 }

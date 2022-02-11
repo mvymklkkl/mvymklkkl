@@ -30,6 +30,8 @@ public class QueryCommand {
 	String aggsField;
 	// 步长
 	Integer step;
+	// 滚动分页id
+	String scrollid;
 	
 	public String getKeyWords() {
 		return keyWords;
@@ -126,6 +128,14 @@ public class QueryCommand {
 
 	public void setStep(Integer step) {
 		this.step = step;
+	}
+
+	public String getScrollid() {
+		return scrollid;
+	}
+
+	public void setScrollid(String scrollid) {
+		this.scrollid = scrollid;
 	}
 	
 }

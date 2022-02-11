@@ -13,9 +13,11 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
@@ -186,6 +188,73 @@ public class SearchServiceImpl implements SearchService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		return searchResponse;
+	}
+
+
+	@Override
+	public SearchResponse scrollquerystring(ElasticSearchRequest request) {
+		SearchRequest searchRequest = new SearchRequest(request.getQuery().getIndexname());
+		// 如果关键词为空，则返回所有
+		String content = request.getQuery().getKeyWords();
+		Integer rows = request.getQuery().getRows();
+		if (rows == null || rows == 0) {
+			rows = 10;
+		}
+		Integer start = request.getQuery().getStart();
+		if (content == null || "".equals(content)) {
+			// 查询所有
+			content = "*";
+		}
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		// 提取搜索内容
+		BoolQueryBuilder builder;
+        if("*".equalsIgnoreCase(content)){
+            builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(content).defaultOperator(Operator.AND));
+        }else {
+            builder = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(ToolUtils.handKeyword(content)).defaultOperator(Operator.AND));
+        }
+		// 提取过滤条件
+		FilterCommand filter = request.getFilter();
+		if (filter != null) {
+			if (filter.getStartdate()!=null&&filter.getEnddate()!=null) {
+					builder.must(QueryBuilders.constantScoreQuery(QueryBuilders.rangeQuery(filter.getField()).from(filter.getStartdate()).to(filter.getEnddate())));
+			}
+		}
+		// 排序
+		if(StringUtils.isNoneBlank(request.getQuery().getSort())){
+			searchSourceBuilder.sort(request.getQuery().getSort(), SortOrder.ASC);
+	    }
+	    searchSourceBuilder.query(builder);
+	    // 处理高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("*");
+        searchSourceBuilder.highlighter(highlightBuilder);
+        
+		searchSourceBuilder.size(rows);
+		
+		SearchResponse searchResponse = null;
+		
+		if (request.getQuery().getScrollid() == null) {
+			searchSourceBuilder.from(0);
+			searchRequest.scroll(TimeValue.timeValueMinutes(5L));
+			searchRequest.source(searchSourceBuilder);
+			try {
+				searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			SearchScrollRequest scrollRequest = new SearchScrollRequest(request.getQuery().getScrollid());
+			scrollRequest.scroll(TimeValue.timeValueMinutes(5L));
+			try {
+				searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return searchResponse;
 	}
