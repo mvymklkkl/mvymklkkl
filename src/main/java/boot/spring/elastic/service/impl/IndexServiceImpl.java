@@ -42,6 +42,7 @@ public class IndexServiceImpl implements IndexService {
 		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("key")).source(doc); 
 		try {
 		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
+		    System.out.println("新增成功" + response.toString());
 		} catch(ElasticsearchException e ) {
 		    if (e.status() == RestStatus.CONFLICT) {
 		    	System.out.println("写入索引产生冲突"+e.getDetailedMessage());
@@ -155,5 +156,61 @@ public class IndexServiceImpl implements IndexService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+
+	@Override
+	public void indexDocWithRouting(String indexName, String indexType, String route, Map<String, Object> doc) {
+		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("key")).source(doc); 
+		indexRequest.routing(route);
+		try {
+		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
+		    System.out.println("新增成功" + response.toString());
+		} catch(ElasticsearchException e ) {
+		    if (e.status() == RestStatus.CONFLICT) {
+		    	System.out.println("写入索引产生冲突"+e.getDetailedMessage());
+		    }
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+	@Override
+	public void indexDocsWithRouting(String indexName, String indexType, List<Map<String, Object>> docs) {
+		try {
+            if (null == docs || docs.size() <= 0) {
+                return;
+            }
+            BulkRequest request = new BulkRequest();
+            for (Map<String, Object> doc : docs) {
+            	HashMap<String, Object> join = (HashMap<String, Object>)doc.get("joinkey");
+            	String route = (String)join.get("parent");
+                request.add(new IndexRequest(indexName, indexType, (String)doc.get("key"))
+                            .source(doc).routing(route));
+            }
+            BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
+            if (bulkResponse != null) {
+                for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                    DocWriteResponse itemResponse = bulkItemResponse.getResponse();
+
+                    if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.INDEX
+                            || bulkItemResponse.getOpType() == DocWriteRequest.OpType.CREATE) {
+                        IndexResponse indexResponse = (IndexResponse) itemResponse;
+                        System.out.println("新增成功" + indexResponse.toString());
+                    } else if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.UPDATE) {
+                        UpdateResponse updateResponse = (UpdateResponse) itemResponse;
+                        System.out.println("修改成功" + updateResponse.toString());
+                    } else if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.DELETE) {
+                        DeleteResponse deleteResponse = (DeleteResponse) itemResponse;
+                        System.out.println("删除成功" + deleteResponse.toString());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 }

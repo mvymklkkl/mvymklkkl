@@ -8,6 +8,8 @@ public class Country {
 	private String last_update;
 	private List<City> citys;
 	
+	String joinkey;
+	
 	public String getCountry_id() {
 		return country_id;
 	}
@@ -32,6 +34,12 @@ public class Country {
 	}
 	public void setCitys(List<City> citys) {
 		this.citys = citys;
+	}
+	public String getJoinkey() {
+		return joinkey;
+	}
+	public void setJoinkey(String joinkey) {
+		this.joinkey = joinkey;
 	}
 	
 }

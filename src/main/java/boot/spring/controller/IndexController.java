@@ -466,7 +466,7 @@ public class IndexController {
 		return new MSG("index success");
 	}	
 	
-	@ApiOperation("导入城市数据")
+	@ApiOperation("导入城市和国家数据-嵌套对象")
 	@RequestMapping(value="/importCitys",method = RequestMethod.GET)
 	@ResponseBody
 	MSG importCitys() throws Exception{
@@ -509,4 +509,117 @@ public class IndexController {
 		br.close();
 		return new MSG("index success");
 	}			
+	
+	/**
+	 * 使用join字段构建索引一对多关联
+	 */
+	@ApiOperation("创建一对多关联索引")
+	@RequestMapping(value="/createJoinMapping",method = RequestMethod.GET)
+	@ResponseBody
+	MSG createJoinMapping() throws Exception {
+		// 创建shop索引映射
+		boolean exsit = indexService.existIndex("cityjoincountry");
+		if ( exsit == false ) {
+			XContentBuilder builder = XContentFactory.jsonBuilder();
+			builder.startObject();
+			{
+			  	builder.startObject("mappings");
+			    {
+			    builder.startObject("properties");
+			    {
+			    	builder.startObject("id");
+			        {
+			            builder.field("type", "integer");
+			        }
+			        builder.endObject();
+			    	builder.startObject("key");
+			        {
+			            builder.field("type", "text");
+			        }
+			        builder.endObject();
+			        builder.startObject("cityname");
+			        {
+			            builder.field("type", "keyword");
+			        }
+			        builder.endObject();
+			        builder.startObject("country");
+			        {
+			            builder.field("type", "keyword");
+			        }
+			        builder.endObject();
+			        builder.startObject("lastupdate");
+			        {
+			        	builder.field("type", "date");
+			            builder.field("format", "yyyy-MM-dd HH:mm:ss");
+			        }
+			        builder.endObject();
+			        builder.startObject("joinkey");
+			        {
+			            builder.field("type", "join");
+			            builder.startObject("relations");
+			            {
+			            	 builder.field("country", "city");
+			            }
+			            builder.endObject();
+			        }
+			        builder.endObject();
+			    }
+			    builder.endObject();
+			    }
+		        builder.endObject();
+			}
+			builder.endObject();
+			indexService.createMapping("cityjoincountry",builder);
+		}
+		return new MSG("index success");
+	}		
+	
+	@ApiOperation("导入城市和国家数据-join")
+	@RequestMapping(value="/importJoinCitys",method = RequestMethod.GET)
+	@ResponseBody
+	MSG importJoinCitys() throws Exception{
+		BufferedReader countryreader = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:country.txt")));
+		String line;
+		int k = 1;
+		List<Map<String, Object>> docs = new ArrayList<>();
+		while ((line = countryreader.readLine()) != null) {
+			String[] words = line.split(";");
+			HashMap<String, Object> doc = new HashMap<String, Object>();
+			doc.put("key", words[0]);
+			doc.put("id", Integer.parseInt(words[0]));
+			doc.put("country", words[1]);
+			doc.put("lastupdate", words[2]);
+			HashMap<String, Object> join = new HashMap<String, Object>();
+			join.put("name", "country");
+			// 设置关联键
+			doc.put("joinkey", join);
+			docs.add(doc);
+			k++;
+		}
+		indexService.indexDocs("cityjoincountry", "_doc", docs);
+		countryreader.close();
+		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:city.txt")));
+		String s;
+		int i = 1;
+		List<Map<String, Object>> citys = new ArrayList<>();
+		while ((s = br.readLine()) != null) {
+			String[] words = s.split(";");
+	        HashMap<String, Object> city = new HashMap<String, Object>();
+	        city.put("key", words[0]);
+	        city.put("id", Integer.parseInt(words[0]));
+	        city.put("cityname", words[1]);
+	        city.put("lastupdate", words[3]);
+	        HashMap<String, Object> joinmap = new HashMap<String, Object>();
+	        joinmap.put("name", "city");
+	        joinmap.put("parent",words[2]);
+	        city.put("joinkey", joinmap);
+	        citys.add(city);
+//	        indexService.indexDocWithRouting("cityjoincountry", "_doc", words[2], city);
+			i++;
+		}
+		br.close();
+		indexService.indexDocsWithRouting("cityjoincountry", "_doc", citys);
+		return new MSG("index success");
+	}			
+		
 }

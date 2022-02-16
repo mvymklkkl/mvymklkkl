@@ -19,8 +19,13 @@ public interface IndexService {
 	 * @param doc
 	 */
 	void indexDoc(String indexName, String indexType, Map<String, Object> doc);
-	
-	
+	/**
+	 * 带路由索引一篇文档
+	 * @param indexName
+	 * @param indexType
+	 * @param doc
+	 */
+	void indexDocWithRouting(String indexName, String indexType, String route, Map<String, Object> doc);
 	/**
 	 * 索引一组文档
 	 * @param indexName
@@ -29,6 +34,14 @@ public interface IndexService {
 	 */
 	void indexDocs(String indexName, String indexType, List<Map<String, Object>> docs);
 	
+	/**
+	 * 带路由索引一组文档
+	 * @param indexName
+	 * @param indexType
+	 * @param route
+	 * @param docs
+	 */
+	void indexDocsWithRouting(String indexName, String indexType, List<Map<String, Object>> docs);
 	/**
 	 * 删除一篇文档
 	 * @param indexName
