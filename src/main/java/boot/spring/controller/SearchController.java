@@ -276,5 +276,25 @@ public class SearchController {
 		grid.setTotal(hits.getTotalHits());
 		return grid;
 	}	
-	
+
+	@ApiOperation("join搜索-haschild")
+	@RequestMapping(value = "/haschild", method = RequestMethod.GET)
+	@ResponseBody
+	public DataTable<Object> haschild() {
+		// 搜索结果
+		List<Object> data = new ArrayList<Object>();
+		SearchResponse searchResponse = searchService.hasChildSearch("city", "cityjoincountry", "cityname", "Alvorada");
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> map = hit.getSourceAsMap();
+			data.add(map);
+		}
+		DataTable<Object> grid = new DataTable<Object>();
+		grid.setDraw(UUID.randomUUID().toString());
+		grid.setRecordsFiltered(hits.getTotalHits());
+		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setData(data);
+		return grid;
+	}
 }

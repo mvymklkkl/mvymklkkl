@@ -40,4 +40,10 @@ public interface SearchService {
 	 * 搜索嵌套对象
 	 */
 	SearchResponse matchNestedObjectSearch(String path, String index, String field, String value, Integer pagenum, Integer pagesize);
+
+	/**
+	 * 搜索join对象
+	 */
+	SearchResponse hasChildSearch(String childtype, String index, String field, String value);
+
 }

@@ -596,8 +596,9 @@ public class IndexController {
 			docs.add(doc);
 			k++;
 		}
-		indexService.indexDocs("cityjoincountry", "_doc", docs);
 		countryreader.close();
+		indexService.indexDocs("cityjoincountry", "_doc", docs);
+		
 		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:city.txt")));
 		String s;
 		int i = 1;
@@ -605,7 +606,7 @@ public class IndexController {
 		while ((s = br.readLine()) != null) {
 			String[] words = s.split(";");
 	        HashMap<String, Object> city = new HashMap<String, Object>();
-	        city.put("key", words[0]);
+	        city.put("key", "1000"+words[0]);
 	        city.put("id", Integer.parseInt(words[0]));
 	        city.put("cityname", words[1]);
 	        city.put("lastupdate", words[3]);
@@ -614,7 +615,6 @@ public class IndexController {
 	        joinmap.put("parent",words[2]);
 	        city.put("joinkey", joinmap);
 	        citys.add(city);
-//	        indexService.indexDocWithRouting("cityjoincountry", "_doc", words[2], city);
 			i++;
 		}
 		br.close();

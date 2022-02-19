@@ -22,6 +22,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.join.query.HasChildQueryBuilder;
+import org.elasticsearch.join.query.JoinQueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -256,6 +258,24 @@ public class SearchServiceImpl implements SearchService {
 				e.printStackTrace();
 			}
 		}
+		return searchResponse;
+	}
+	
+	@Override
+	public SearchResponse hasChildSearch(String childtype, String index, String field, String value) {
+		SearchRequest searchRequest = new SearchRequest(index);
+		HasChildQueryBuilder builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.matchAllQuery(), ScoreMode.None);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(builder);
+		searchRequest.source(searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			 searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return searchResponse;
 	}
 }
