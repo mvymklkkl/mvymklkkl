@@ -21,6 +21,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.join.query.HasChildQueryBuilder;
 import org.elasticsearch.join.query.JoinQueryBuilders;
@@ -262,11 +263,19 @@ public class SearchServiceImpl implements SearchService {
 	}
 	
 	@Override
-	public SearchResponse hasChildSearch(String childtype, String index, String field, String value) {
+	public SearchResponse hasChildSearch(String childtype, String index, String field, String value, Integer pagenum, Integer pagesize) {
 		SearchRequest searchRequest = new SearchRequest(index);
-		HasChildQueryBuilder builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.matchAllQuery(), ScoreMode.None);
+		HasChildQueryBuilder builder;
+		if ( value != null ) {
+			builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.termQuery(field, value), ScoreMode.None);
+		} else {
+			builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.matchAllQuery(), ScoreMode.None);
+		}
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(builder);
+		int start = (pagenum - 1) * pagesize;
+        searchSourceBuilder.from(start);
+        searchSourceBuilder.size(pagesize);
 		searchRequest.source(searchSourceBuilder);
 		SearchResponse searchResponse = null;
 		try {
@@ -275,7 +284,32 @@ public class SearchServiceImpl implements SearchService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return searchResponse;
+	}
+
+
+	@Override
+	public SearchResponse hasParentSearch(String parenttype, String index, String field, String value, Integer pagenum, Integer pagesize) {
+		SearchRequest searchRequest = new SearchRequest(index);
+		QueryBuilder builder;
+		if ( value != null ) {
+			builder = JoinQueryBuilders.hasParentQuery(parenttype, QueryBuilders.termQuery(field, value), false);
+		} else {
+			builder = JoinQueryBuilders.hasParentQuery(parenttype, QueryBuilders.matchAllQuery(), false);
+		}
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(builder);
+		int start = (pagenum - 1) * pagesize;
+        searchSourceBuilder.from(start);
+        searchSourceBuilder.size(pagesize);
+		searchRequest.source(searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			 searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return searchResponse;
 	}
 }

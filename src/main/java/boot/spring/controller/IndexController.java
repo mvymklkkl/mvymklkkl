@@ -606,7 +606,8 @@ public class IndexController {
 		while ((s = br.readLine()) != null) {
 			String[] words = s.split(";");
 	        HashMap<String, Object> city = new HashMap<String, Object>();
-	        city.put("key", "1000"+words[0]);
+	        // key必须为纯数字，否则has child和has parent查询都失败！
+	        city.put("key", "1000" + words[0]);
 	        city.put("id", Integer.parseInt(words[0]));
 	        city.put("cityname", words[1]);
 	        city.put("lastupdate", words[3]);

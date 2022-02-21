@@ -42,8 +42,13 @@ public interface SearchService {
 	SearchResponse matchNestedObjectSearch(String path, String index, String field, String value, Integer pagenum, Integer pagesize);
 
 	/**
-	 * 搜索join对象
+	 * join查询：以子查父
 	 */
-	SearchResponse hasChildSearch(String childtype, String index, String field, String value);
+	SearchResponse hasChildSearch(String childtype, String index, String field, String value, Integer pagenum, Integer pagesize);
+	
+	/**
+	 * join查询：以父查子
+	 */
+	SearchResponse hasParentSearch(String parenttype, String index, String field, String value, Integer pagenum, Integer pagesize);
 
 }

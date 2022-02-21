@@ -29,10 +29,13 @@ import boot.spring.pagemodel.DataTable;
 import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
 import boot.spring.pagemodel.GeoDistance;
+import boot.spring.pagemodel.JoinParams;
 import boot.spring.pagemodel.MSG;
 import boot.spring.pagemodel.QueryCommand;
 import boot.spring.pagemodel.RangeQuery;
 import boot.spring.pagemodel.ResultData;
+import boot.spring.po.City;
+import boot.spring.po.Country;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -226,8 +229,6 @@ public class SearchController {
 		grid.setLength(geo.getPagesize());
 		return grid;
 	}
-
-	
 	
 	@ApiOperation("分页查询城市索引-嵌套父文档")
 	@RequestMapping(value = "/city", method = RequestMethod.POST)
@@ -277,13 +278,35 @@ public class SearchController {
 		return grid;
 	}	
 
-	@ApiOperation("join搜索-haschild")
-	@RequestMapping(value = "/haschild", method = RequestMethod.GET)
+	@ApiOperation("join搜索-用城市搜国家")
+	@RequestMapping(value = "/haschild", method = RequestMethod.POST)
 	@ResponseBody
-	public DataTable<Object> haschild() {
+	public DataTable<Object> haschild(@RequestBody JoinParams param) {
 		// 搜索结果
 		List<Object> data = new ArrayList<Object>();
-		SearchResponse searchResponse = searchService.hasChildSearch("city", "cityjoincountry", "cityname", "Alvorada");
+		SearchResponse searchResponse = searchService.hasChildSearch("city", "cityjoincountry", "cityname", param.getName(), param.getPagenum(), param.getPagesize());
+		SearchHits hits = searchResponse.getHits();
+		SearchHit[] searchHits = hits.getHits();
+		for (SearchHit hit : searchHits) {
+			Map<String, Object> map = hit.getSourceAsMap();
+			data.add(map);
+		}
+		DataTable<Object> grid = new DataTable<Object>();
+		grid.setDraw(UUID.randomUUID().toString());
+		grid.setRecordsFiltered(hits.getTotalHits());
+		grid.setLength(param.getPagesize());
+		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setData(data);
+		return grid;
+	}
+	
+	@ApiOperation("join搜索-用国家搜城市")
+	@RequestMapping(value = "/hasparent", method = RequestMethod.POST)
+	@ResponseBody
+	public DataTable<Object> hasparent(@RequestBody JoinParams param) {
+		// 搜索结果
+		List<Object> data = new ArrayList<Object>();
+		SearchResponse searchResponse = searchService.hasParentSearch("country", "cityjoincountry", "country", param.getName(), param.getPagenum(), param.getPagesize());
 		SearchHits hits = searchResponse.getHits();
 		SearchHit[] searchHits = hits.getHits();
 		for (SearchHit hit : searchHits) {
@@ -294,7 +317,8 @@ public class SearchController {
 		grid.setDraw(UUID.randomUUID().toString());
 		grid.setRecordsFiltered(hits.getTotalHits());
 		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setLength(param.getPagesize());
 		grid.setData(data);
 		return grid;
-	}
+	}	
 }
