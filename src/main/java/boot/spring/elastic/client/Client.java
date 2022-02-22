@@ -13,9 +13,9 @@ public class Client {
 	RestHighLevelClient configRestHighLevelClient(){
 		RestHighLevelClient client = new RestHighLevelClient(
 		        RestClient.builder(
-//		                new HttpHost("172.16.3.151", 9200, "http"),
-//		                new HttpHost("172.16.3.152", 9200, "http"),
-		                new HttpHost("localhost", 9200, "http")));
+		                new HttpHost("172.16.3.151", 9200, "http"),
+		                new HttpHost("172.16.3.152", 9200, "http"),
+		                new HttpHost("172.16.3.153", 9200, "http")));
 		return client;
 	}
 }

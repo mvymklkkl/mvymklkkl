@@ -49,8 +49,8 @@ public class AggsServiceImpl implements AggsService {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(100)
-                .order(BucketOrder.count(true));
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(10);
+//                .order(BucketOrder.count(true));
         searchSourceBuilder.query(queryBuilder).aggregation(aggregation);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
