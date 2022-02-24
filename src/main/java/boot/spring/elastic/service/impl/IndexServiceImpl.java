@@ -94,6 +94,7 @@ public class IndexServiceImpl implements IndexService {
 		DeleteRequest request = new DeleteRequest(indexName, indexType, id);
 		try {
 			deleteResponse = client.delete(request, RequestOptions.DEFAULT);
+			System.out.println("删除成功" + deleteResponse.toString());
 			if (deleteResponse.getResult() == DocWriteResponse.Result.NOT_FOUND) {
 				System.out.println("删除失败，文档不存在" + deleteResponse.toString());
 				return -1;

@@ -266,7 +266,7 @@ public class SearchServiceImpl implements SearchService {
 	public SearchResponse hasChildSearch(String childtype, String index, String field, String value, Integer pagenum, Integer pagesize) {
 		SearchRequest searchRequest = new SearchRequest(index);
 		HasChildQueryBuilder builder;
-		if ( value != null ) {
+		if ( value != null && !("".equals(value))) {
 			builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.termQuery(field, value), ScoreMode.None);
 		} else {
 			builder = JoinQueryBuilders.hasChildQuery(childtype, QueryBuilders.matchAllQuery(), ScoreMode.None);
@@ -292,7 +292,7 @@ public class SearchServiceImpl implements SearchService {
 	public SearchResponse hasParentSearch(String parenttype, String index, String field, String value, Integer pagenum, Integer pagesize) {
 		SearchRequest searchRequest = new SearchRequest(index);
 		QueryBuilder builder;
-		if ( value != null ) {
+		if ( value != null && !("".equals(value))) {
 			builder = JoinQueryBuilders.hasParentQuery(parenttype, QueryBuilders.termQuery(field, value), false);
 		} else {
 			builder = JoinQueryBuilders.hasParentQuery(parenttype, QueryBuilders.matchAllQuery(), false);

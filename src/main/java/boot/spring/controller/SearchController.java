@@ -62,6 +62,16 @@ public class SearchController {
 		return "city";
 	}
 	
+	@RequestMapping(value = "/haschild", method = RequestMethod.GET)
+	public String haschild() {
+		return "haschild";
+	}
+	
+	@RequestMapping(value = "/hasparent", method = RequestMethod.GET)
+	public String hasparent() {
+		return "hasparent";
+	}
+	
     @ApiOperation("获取一个日志数据")
 	@RequestMapping(value = "/sougoulog/{id}", method = RequestMethod.GET)
 	@ResponseBody

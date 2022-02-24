@@ -149,7 +149,24 @@ pre {outline: 1px solid #ccc; }
 					</a>
 						<ul class="treeview-menu">
 							<li><a href="city"><i class="fa fa-search"></i> 嵌套对象</a></li>
-						</ul></li>
+							<li class="treeview">
+          <a href="#">
+            <i class="fa fa-share"></i> <span>JOIN关联</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li>
+              <a href="hasparent"><i class="fa fa-circle-o"></i>以父搜子
+              </a>
+            </li>
+            <li>
+              <a href="haschild"><i class="fa fa-circle-o"></i>以子搜父
+              </a>
+            </li>
+          </ul>
+        </li>
 				</ul>
 			</section>
 			<!-- /.sidebar -->
@@ -194,12 +211,14 @@ pre {outline: 1px solid #ccc; }
 								</div>
 								<!-- /.box-header -->
 								<div class="box-body">
-									<button type="button" id="mapping" class="btn btn-primary">构建搜狗日志索引结构</button>
-									<button type="button" id="import" class="btn btn-primary">批量导入搜狗日志记录</button>
-									<button type="button" id="distancemapping" class="btn btn-info">构建经纬度索引结构</button>
-									<button type="button" id="importdistance" class="btn btn-info">批量导入经纬度记录</button>
-									<button type="button" id="nestedmapping" class="btn btn-info">构建嵌套对象索引结构</button>
-									<button type="button" id="nestedimport" class="btn btn-info">批量导入嵌套对象记录</button>
+									<button type="button" id="mapping" class="btn btn-primary col-md-3">构建搜狗日志索引结构</button>
+									<button type="button" id="import" class="btn btn-primary col-md-3">批量导入搜狗日志记录</button>
+									<button type="button" id="distancemapping" class="btn btn-warning col-md-3">构建经纬度索引结构</button>
+									<button type="button" id="importdistance" class="btn btn-warning col-md-3">批量导入经纬度记录</button>
+									<button type="button" id="nestedmapping" class="btn btn-info col-md-3">构建嵌套对象索引结构</button>
+									<button type="button" id="nestedimport" class="btn btn-info col-md-3">批量导入嵌套对象记录</button>
+									<button type="button" id="joinmapping" class="btn btn-danger col-md-3">构建join关联索引结构</button>
+									<button type="button" id="joinimport" class="btn btn-danger col-md-3">批量导入join关联记录</button>
 								</div>
 							</div>
 						</div>
@@ -806,6 +825,18 @@ $(document).ready(function(){
 			alert("嵌套对象数据导入成功");
 		});
 	});	
+	
+	$("#joinmapping").click(function(){
+		$.get("createJoinMapping",function(){
+			alert("嵌套对象索引构建成功");
+		});
+	});
+	
+	$("#joinimport").click(function(){
+		$.get("importJoinCitys",function(){
+			alert("嵌套对象数据导入成功");
+		});
+	});		
 	
 });
   </script>
