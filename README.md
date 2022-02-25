@@ -35,14 +35,8 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 ](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/elastic%20search%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%A4%9A%E4%B8%AA%E7%B4%A2%E5%BC%95%E4%B9%8B%E9%97%B4%E7%9A%84%E4%B8%BB%E5%A4%96%E9%94%AE%E5%85%B3%E8%81%94?sort_id=1789201)
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1205/084028_e7962b37_1110335.jpeg "微信图片_20191205083903.jpg")
 ### 效果图
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103749_26e8f1e2_1110335.gif "s.gif")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111304_8d091e1e_1110335.gif "s.gif")
-
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111317_5439fa80_1110335.png "1576119888(1).png")
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111324_33535516_1110335.png "1576119932(1).png")
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111331_2a60556d_1110335.png "1576119952(1).png")
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111345_cfef32ce_1110335.png "1576119967(1).png")
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1212/111354_469fd717_1110335.png "1576120008(1).png")
 ### 附录：个人作品索引目录（持续更新）
 
 #### 基础篇:职业化，从做好OA系统开始
