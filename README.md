@@ -36,7 +36,12 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1205/084028_e7962b37_1110335.jpeg "微信图片_20191205083903.jpg")
 ### 效果图
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103749_26e8f1e2_1110335.gif "s.gif")
-
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103904_efd71026_1110335.png "1.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103916_d0f9bf4f_1110335.png "1577327499(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103932_6fe4f3c0_1110335.png "1577327518(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103950_7f751403_1110335.png "1577327531(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/104001_568e956d_1110335.png "1577327550(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/104013_78a63d0c_1110335.png "1577327579(1).png")
 ### 附录：个人作品索引目录（持续更新）
 
 #### 基础篇:职业化，从做好OA系统开始
