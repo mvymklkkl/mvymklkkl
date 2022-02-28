@@ -37,9 +37,11 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 ### 效果图
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103749_26e8f1e2_1110335.gif "s.gif")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103904_efd71026_1110335.png "1.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1227/083952_faa81787_1110335.png "1577407124(1).png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103916_d0f9bf4f_1110335.png "1577327499(1).png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103932_6fe4f3c0_1110335.png "1577327518(1).png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/103950_7f751403_1110335.png "1577327531(1).png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1227/084034_1ebafbc9_1110335.png "1577407143(1).png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/104001_568e956d_1110335.png "1577327550(1).png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1226/104013_78a63d0c_1110335.png "1577327579(1).png")
 ### 附录：个人作品索引目录（持续更新）
