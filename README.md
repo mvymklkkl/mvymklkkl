@@ -90,10 +90,10 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 33. 基于可靠消息最终一致性实现分布式事务（activeMQ）[购买](http://t.cn/Ai8YLPBL)
 34. Spring boot dubbo整合seata实现分布式事务![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题") [购买](https://dwz.lc/csO0rp2)
 > 包含组件nacos v1.1.0 + seata v0.7.1 +spring boot dubbo v2.7.5
-<a href="https://images.gitee.com/uploads/images/2020/0115/093040_0c5debfb_1110335.gif" target="_blank">效果图</a>
+<a href="https://images.gitee.com/uploads/images/2020/0119/112233_62a33a77_1110335.gif" target="_blank">效果图</a>
 35. Spring cloud alibaba v2.1.0整合seata实现分布式事务 ![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题")[购买](https://dwz.lc/0T8KCTC)
 > 包含组件nacos v1.1.0 + seata v0.7.1 +spring cloud alibaba v2.1.0
-<a href="[https://images.gitee.com/uploads/images/2020/0115/093040_0c5debfb_1110335.gif](https://images.gitee.com/uploads/images/2020/0115/093040_0c5debfb_1110335.gif)" target="_blank">效果图</a>
+<a href="https://images.gitee.com/uploads/images/2020/0119/134408_ee14a016_1110335.gif" target="_blank">效果图</a>
 36. 决战高并发：数据库锁机制和事务隔离级别的实现![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题") [购买](http://t.cn/Ai8YyAQE)
 37. 决战高并发：使用redis实现分布式锁  ![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题")[购买](http://t.cn/Ai8Y4bER)
 38. 决战高并发：使用zookeeper实现分布式锁 [购买](http://t.cn/Ai8Y4Cuq)
