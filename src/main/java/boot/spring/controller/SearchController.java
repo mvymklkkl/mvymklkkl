@@ -331,4 +331,81 @@ public class SearchController {
 		grid.setData(data);
 		return grid;
 	}	
+
+    @ApiOperation("导出搜索结果为Excel")
+	@RequestMapping(value="/exportExcel",method = RequestMethod.POST)
+	@ResponseBody
+	public void exportExcel(HttpServletResponse response, @RequestBody ElasticSearchRequest query) {
+		try {
+			HSSFWorkbook workbook = new HSSFWorkbook();						// 创建工作簿对象
+			HSSFSheet sheet = workbook.createSheet("sheet1");	
+			// 搜索结果
+			SearchResponse searchResponse = searchService.query_string(query);
+			SearchHits hits = searchResponse.getHits();
+			SearchHit[] searchHits = hits.getHits();
+			if (searchHits.length>0){
+				// 写列头
+				SearchHit first = searchHits[0];
+				HSSFRow frow = sheet.createRow(0);
+				Map<String, Object> fmap = first.getSourceAsMap();
+				int fcol = 0;
+				for(String key : fmap.keySet())
+				{
+						if (key.contains("@"))
+						{	
+							continue;
+						} else {
+							HSSFCell  cell = null;   //设置单元格的数据类型
+							cell = frow.createCell(fcol, HSSFCell.CELL_TYPE_STRING);
+							cell.setCellValue(key);
+						}
+						fcol++;
+				}
+				
+				for (int i = 0; i< searchHits.length; i++) {
+					SearchHit hit = searchHits[i];
+					HSSFRow row = sheet.createRow(i+1);
+					// 把每条记录包装成ResultField
+					Map<String, Object> map = hit.getSourceAsMap();
+					
+					int col = 0;
+					for(String key : map.keySet())
+				    {
+						if (key.contains("@"))
+							continue;
+						if (map.get(key) == null && !("id".equals(key))) {
+							HSSFCell  cell = null;   //设置单元格的数据类型
+							cell = row.createCell(col, HSSFCell.CELL_TYPE_STRING);
+							cell.setCellValue("");
+						}  else {
+								HSSFCell  cell = null;   //设置单元格的数据类型
+								cell = row.createCell(col, HSSFCell.CELL_TYPE_STRING);
+								String cellvalue = map.get(key).toString();
+								cell.setCellValue(cellvalue);
+						}
+						col++;
+				    }
+				}
+			} else {
+				HSSFRow frow = sheet.createRow(0);
+			}
+			ByteArrayOutputStream os=new ByteArrayOutputStream();
+		        try {
+		            workbook.write(os);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		       
+		        byte[] content=os.toByteArray();
+		        InputStream is=new ByteArrayInputStream(content);
+				response.setContentType("application/vnd.ms-excel");
+				response.setHeader("contentDisposition", "attachment;filename=AllUsers.xls");
+				ServletOutputStream output = response.getOutputStream();
+				IOUtils.copy(is, output);
+		} catch (HttpMessageNotReadableException hex) {
+			hex.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
