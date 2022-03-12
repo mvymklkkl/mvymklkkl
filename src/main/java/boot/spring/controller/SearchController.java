@@ -365,7 +365,7 @@ public class SearchController {
 				for (int i = 0; i< searchHits.length; i++) {
 					SearchHit hit = searchHits[i];
 					HSSFRow row = sheet.createRow(i+1);
-					// 把每条记录包装成ResultField
+					
 					Map<String, Object> map = hit.getSourceAsMap();
 					
 					int col = 0;
