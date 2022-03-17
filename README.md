@@ -13,6 +13,8 @@ Spring boot整合elastic search 6.8.1实现全文检索。主要包含以下特�
 5. 聚集统计包含词条聚集、日期直方图聚集、范围聚集，并使用chart.js进行可视化
 6. 数据建模部分实现了嵌套对象的使用，查询时无需join性能较好，但是在建索引时就要把关联数据join好嵌套进去。
 7. swagger入口：http://localhost:8080/swagger-ui.html
+8. 新增数据库数据导入es的工具，编程实现比logstash灵活。使用请切换分支到master。
+[输入链接说明](https://gitee.com/shenzhanwang/Spring-elastic_search/tree/master/)
 ### 相关WIKI
 #### kibana篇
 - [CentOS上Kibana安装指南](https://gitee.com/shenzhanwang/Spring-elastic_search/wikis/CentOS%E4%B8%8AKibana%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97?sort_id=1717428)
