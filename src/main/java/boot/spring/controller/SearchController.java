@@ -106,7 +106,7 @@ public class SearchController {
 	@ResponseBody
     public ResultData sougoulognumber() throws Exception {
     	SearchResponse rsp = searchService.matchAllSearch("sougoulog");
-    	Long total = rsp.getHits().getTotalHits();
+    	Long total = rsp.getHits().getTotalHits().value;
     	ResultData rd = new ResultData();
     	rd.setData(total);
     	return rd;
@@ -160,7 +160,7 @@ public class SearchController {
 		grid.setCurrent(current);
 		grid.setRowCount(rowCount);
 		grid.setRows(data);
-		grid.setTotal(hits.getTotalHits());
+		grid.setTotal(hits.getTotalHits().value);
 		return grid;
 	}	
 	
@@ -192,7 +192,7 @@ public class SearchController {
 		ResultData resultData = new ResultData();
 		resultData.setQtime(new Date());
 		resultData.setData(data);
-		resultData.setNumberFound(hits.getTotalHits());
+		resultData.setNumberFound(hits.getTotalHits().value);
 		resultData.setStart(request.getQuery().getStart());
 		return resultData;
 	}
@@ -225,7 +225,7 @@ public class SearchController {
 		ResultData resultData = new ResultData();
 		resultData.setQtime(new Date());
 		resultData.setData(data);
-		resultData.setNumberFound(hits.getTotalHits());
+		resultData.setNumberFound(hits.getTotalHits().value);
 		resultData.setStart(request.getQuery().getStart());
 		resultData.setScrollid(scrollid);
 		return resultData;
@@ -246,8 +246,8 @@ public class SearchController {
 		}
 		DataTable<Object> grid = new DataTable<Object>();
 		grid.setDraw(UUID.randomUUID().toString());
-		grid.setRecordsFiltered(hits.getTotalHits());
-		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setRecordsFiltered(hits.getTotalHits().value);
+		grid.setRecordsTotal(hits.getTotalHits().value);
 		grid.setData(data);
 		grid.setLength(geo.getPagesize());
 		return grid;
@@ -297,7 +297,7 @@ public class SearchController {
 		grid.setCurrent(current);
 		grid.setRowCount(rowCount);
 		grid.setRows(data);
-		grid.setTotal(hits.getTotalHits());
+		grid.setTotal(hits.getTotalHits().value);
 		return grid;
 	}	
 
@@ -316,9 +316,9 @@ public class SearchController {
 		}
 		DataTable<Object> grid = new DataTable<Object>();
 		grid.setDraw(UUID.randomUUID().toString());
-		grid.setRecordsFiltered(hits.getTotalHits());
+		grid.setRecordsFiltered(hits.getTotalHits().value);
 		grid.setLength(param.getPagesize());
-		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setRecordsTotal(hits.getTotalHits().value);
 		grid.setData(data);
 		return grid;
 	}
@@ -338,8 +338,8 @@ public class SearchController {
 		}
 		DataTable<Object> grid = new DataTable<Object>();
 		grid.setDraw(UUID.randomUUID().toString());
-		grid.setRecordsFiltered(hits.getTotalHits());
-		grid.setRecordsTotal(hits.getTotalHits());
+		grid.setRecordsFiltered(hits.getTotalHits().value);
+		grid.setRecordsTotal(hits.getTotalHits().value);
 		grid.setLength(param.getPagesize());
 		grid.setData(data);
 		return grid;

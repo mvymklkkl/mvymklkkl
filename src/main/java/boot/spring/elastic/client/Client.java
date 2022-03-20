@@ -13,7 +13,7 @@ public class Client {
 	RestHighLevelClient configRestHighLevelClient(){
 		RestHighLevelClient client = new RestHighLevelClient(
 		        RestClient.builder(
-		                new HttpHost("172.16.2.66", 3200, "http")));
+		                new HttpHost("127.0.0.1", 9200, "http")));
 		return client;
 	}
 }

@@ -65,7 +65,7 @@ public class AggsServiceImpl implements AggsService {
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
         resultData.setData(list);
-        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits().value);
         resultData.setStart(content.getStart());
         return resultData;
     }
@@ -113,7 +113,7 @@ public class AggsServiceImpl implements AggsService {
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
         resultData.setData(list);
-        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits().value);
         resultData.setStart(content.getStart());
         return resultData;
     }
@@ -154,7 +154,7 @@ public class AggsServiceImpl implements AggsService {
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
         resultData.setData(list);
-        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits().value);
         resultData.setStart(content.getStart());
         return resultData;
     }
@@ -193,7 +193,7 @@ public class AggsServiceImpl implements AggsService {
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
         resultData.setData(list);
-        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits().value);
         resultData.setStart(content.getStart());
         return resultData;
     }
@@ -221,7 +221,7 @@ public class AggsServiceImpl implements AggsService {
         ResultData resultData = new ResultData();
         resultData.setQtime(new Date());
         resultData.setData(list.subList(0, 10));
-        resultData.setNumberFound(searchResponse.getHits().getTotalHits());
+        resultData.setNumberFound(searchResponse.getHits().getTotalHits().value);
         resultData.setStart(0);
         return resultData;
 	}
