@@ -412,7 +412,7 @@ public class SearchController {
 		        byte[] content=os.toByteArray();
 		        InputStream is=new ByteArrayInputStream(content);
 				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("contentDisposition", "attachment;filename=AllUsers.xls");
+				response.setHeader("Content-Disposition", "attachment;filename=AllUsers.xls");
 				ServletOutputStream output = response.getOutputStream();
 				IOUtils.copy(is, output);
 		} catch (HttpMessageNotReadableException hex) {
