@@ -49,8 +49,9 @@ public class AggsServiceImpl implements AggsService {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(10);
-//                .order(BucketOrder.count(true));
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("countnumber").field(content.getAggsField()).size(10)
+                .order(BucketOrder.key(true));
+        searchSourceBuilder.trackTotalHits(true);
         searchSourceBuilder.query(queryBuilder).aggregation(aggregation);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -74,6 +75,7 @@ public class AggsServiceImpl implements AggsService {
     public ResultData rangeAggs(RangeQuery content) throws Exception {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.trackTotalHits(true);
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
         // 聚集
         String dateField = content.getAggsField();
@@ -123,6 +125,7 @@ public class AggsServiceImpl implements AggsService {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
+        searchSourceBuilder.trackTotalHits(true);
         // 聚集
         String dateField = content.getAggsField();
         Integer step = content.getStep();
@@ -164,6 +167,7 @@ public class AggsServiceImpl implements AggsService {
         SearchRequest searchRequest = new SearchRequest(content.getIndexname());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
+        searchSourceBuilder.trackTotalHits(true);
         // 聚集
         String dateField = content.getAggsField();
         Integer step = content.getStep();
@@ -208,6 +212,7 @@ public class AggsServiceImpl implements AggsService {
         						.field("country.countryname.keyword").size(100)
         						.order(BucketOrder.count(false)));
         searchSourceBuilder.query(queryBuilder).aggregation(aggregation);
+        searchSourceBuilder.trackTotalHits(true);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         Nested result = searchResponse.getAggregations().get("nestedAggs");

@@ -90,6 +90,8 @@ public class SearchServiceImpl implements SearchService {
 		if(StringUtils.isNoneBlank(request.getQuery().getSort())){
 			searchSourceBuilder.sort(request.getQuery().getSort(), SortOrder.ASC);
 	    }
+		// 查询全部
+		searchSourceBuilder.trackTotalHits(true);
 	    searchSourceBuilder.query(builder);
 	    // 处理高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();
@@ -134,6 +136,7 @@ public class SearchServiceImpl implements SearchService {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery());
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(builder);
+		searchSourceBuilder.trackTotalHits(true);
 		searchRequest.source(searchSourceBuilder);
 		SearchResponse searchResponse = null;
 		try {
@@ -157,6 +160,7 @@ public class SearchServiceImpl implements SearchService {
 	        SearchResponse searchResponse = null;
 	        try {
 	            searchSourceBuilder.query(builder);
+	            searchSourceBuilder.trackTotalHits(true);
 	            searchRequest.source(searchSourceBuilder);
 	            int start = (pagenum - 1) * pagesize;
 	            searchSourceBuilder.from(start);
@@ -175,6 +179,7 @@ public class SearchServiceImpl implements SearchService {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery()
 				.must(QueryBuilders.nestedQuery(path, QueryBuilders.matchQuery(field, value), ScoreMode.None));
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.trackTotalHits(true);
 		searchSourceBuilder.query(builder);
 		int start = (pagenum - 1) * pagesize;
         searchSourceBuilder.from(start);
@@ -229,6 +234,7 @@ public class SearchServiceImpl implements SearchService {
 			searchSourceBuilder.sort(request.getQuery().getSort(), SortOrder.ASC);
 	    }
 	    searchSourceBuilder.query(builder);
+	    searchSourceBuilder.trackTotalHits(true);
 	    // 处理高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.field("*");
@@ -272,6 +278,7 @@ public class SearchServiceImpl implements SearchService {
 		}
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(builder);
+		searchSourceBuilder.trackTotalHits(true);
 		int start = (pagenum - 1) * pagesize;
         searchSourceBuilder.from(start);
         searchSourceBuilder.size(pagesize);
@@ -298,6 +305,7 @@ public class SearchServiceImpl implements SearchService {
 		}
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(builder);
+		searchSourceBuilder.trackTotalHits(true);
 		int start = (pagenum - 1) * pagesize;
         searchSourceBuilder.from(start);
         searchSourceBuilder.size(pagesize);
