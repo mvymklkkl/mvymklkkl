@@ -83,7 +83,7 @@ public class SearchServiceImpl implements SearchService {
 		FilterCommand filter = request.getFilter();
 		if (filter != null) {
 			if (filter.getStartdate()!=null&&filter.getEnddate()!=null) {
-					builder.must(QueryBuilders.constantScoreQuery(QueryBuilders.rangeQuery(filter.getField()).from(filter.getStartdate()).to(filter.getEnddate())));
+					builder.filter(QueryBuilders.rangeQuery(filter.getField()).from(filter.getStartdate()).to(filter.getEnddate()));
 			}
 		}
 		// 排序
