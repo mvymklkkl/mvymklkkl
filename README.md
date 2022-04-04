@@ -14,6 +14,25 @@ Spring boot整合elastic search 7.5.1实现全文检索。主要包含以下特�
 6. 数据建模部分实现了嵌套对象的使用，查询时无需join性能较好，但是在建索引时就要把关联数据join好嵌套进去。
 7. swagger入口：http://localhost:8080/swagger-ui.html
 8. 新增数据库数据导入es的工具，编程实现比logstash灵活。使用请切换分支到master。
+9. 通用的多条件查询结构模板为，其中must部分放入带分词的搜索例如match、querystring等；filter部分放入过滤条件例如term、range等查询。因为filter部分利用缓存、跳过相关度打分提高性能：
+
+```
+{
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "title":   "Search"        }},
+        { "match": { "content": "Elasticsearch" }}
+      ],
+      "filter": [ 
+        { "term":  { "status": "published" }},
+        { "range": { "publish_date": { "gte": "2015-01-01" }}}
+      ]
+    }
+  }
+}
+```
+
 [db-import-elastic_search](https://gitee.com/shenzhanwang/Spring-elastic_search/tree/master/)
 ### 相关WIKI
 #### kibana篇
