@@ -17,6 +17,7 @@ Spring boot整合elastic search 7.5.1实现全文检索。主要包含以下特�
 9. 通用的多条件查询结构模板是布尔查询，其中must部分放入带分词的搜索例如match、querystring等；filter部分放入过滤条件例如term、range等查询。因为filter部分利用缓存、跳过相关度打分提高性能：
 
 ```
+// 通用查询结构模板
 {
   "query": { 
     "bool": { 
