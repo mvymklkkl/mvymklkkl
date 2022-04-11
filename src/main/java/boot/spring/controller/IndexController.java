@@ -310,7 +310,7 @@ public class IndexController {
 				end = docs.size();
 			}
 			List<Map<String, Object>> sublist = docs.subList(start, end);
-			indexService.indexDocs("sougoulog", "_doc", sublist);
+			indexService.indexDocs("sougoulog", sublist);
 			start += 1000;
 		}
 		br.close();
@@ -385,7 +385,7 @@ public class IndexController {
 				end = docs.size();
 			}
 			List<Map<String, Object>> sublist = docs.subList(start, end);
-			indexService.indexDocs("shop", "_doc", sublist);
+			indexService.indexDocs("shop", sublist);
 			start += 1000;
 		}
 		br.close();
@@ -401,10 +401,10 @@ public class IndexController {
 	}
 	
 	@ApiOperation("向索引修改一个文档")
-	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.PUT)
+	@RequestMapping(value="/indexDoc/{indexname}/{id}",method = RequestMethod.PUT)
 	@ResponseBody
-	MSG updateIndexDoc(@PathVariable String indexname, @PathVariable String indextype, @RequestBody Map<String, Object> jsonMap){
-		indexService.updateDoc(indexname, indextype, jsonMap);
+	MSG updateIndexDoc(@PathVariable String indexname, @PathVariable String id, @RequestBody Map<String, Object> jsonMap){
+		indexService.updateDoc(indexname, id, jsonMap);
 		return new MSG("index success");
 	}	
 	
@@ -412,7 +412,7 @@ public class IndexController {
 	@RequestMapping(value="/indexDocs/{indexname}/{indextype}/{id}",method = RequestMethod.DELETE)
 	@ResponseBody
 	MSG indexDocs(@PathVariable String indexname, @PathVariable String indextype, @PathVariable String id){
-		int result = indexService.deleteDoc(indexname, indextype, id);
+		int result = indexService.deleteDoc(indexname, id);
 		if ( result < 0 ) {
 			return new MSG("index delete failed");
 		} else {
@@ -535,7 +535,7 @@ public class IndexController {
 	        docs.add(doc);
 			i++;
 		}
-		indexService.indexDocs("city", "_doc", docs);
+		indexService.indexDocs("city", docs);
 		br.close();
 		return new MSG("index success");
 	}			
@@ -627,7 +627,7 @@ public class IndexController {
 			k++;
 		}
 		countryreader.close();
-		indexService.indexDocs("cityjoincountry", "_doc", docs);
+		indexService.indexDocs("cityjoincountry", docs);
 		
 		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:city.txt")));
 		String s;
@@ -649,7 +649,7 @@ public class IndexController {
 			i++;
 		}
 		br.close();
-		indexService.indexDocsWithRouting("cityjoincountry", "_doc", citys);
+		indexService.indexDocsWithRouting("cityjoincountry", citys);
 		return new MSG("index success");
 	}			
 		

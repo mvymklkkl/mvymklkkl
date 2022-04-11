@@ -18,21 +18,21 @@ public interface IndexService {
 	 * @param indexType
 	 * @param doc
 	 */
-	void indexDoc(String indexName, String indexType, Map<String, Object> doc);
+	void indexDoc(String indexName, String id, Map<String, Object> doc);
 	/**
 	 * 带路由索引一篇文档
 	 * @param indexName
 	 * @param indexType
 	 * @param doc
 	 */
-	void indexDocWithRouting(String indexName, String indexType, String route, Map<String, Object> doc);
+	void indexDocWithRouting(String indexName, String route, Map<String, Object> doc);
 	/**
 	 * 索引一组文档
 	 * @param indexName
 	 * @param indexType
 	 * @param docs
 	 */
-	void indexDocs(String indexName, String indexType, List<Map<String, Object>> docs);
+	void indexDocs(String indexName, List<Map<String, Object>> docs);
 	
 	/**
 	 * 带路由索引一组文档
@@ -41,7 +41,7 @@ public interface IndexService {
 	 * @param route
 	 * @param docs
 	 */
-	void indexDocsWithRouting(String indexName, String indexType, List<Map<String, Object>> docs);
+	void indexDocsWithRouting(String indexName, List<Map<String, Object>> docs);
 	/**
 	 * 删除一篇文档
 	 * @param indexName
@@ -49,7 +49,7 @@ public interface IndexService {
 	 * @param id
 	 * @return
 	 */
-	int deleteDoc(String indexName, String indexType, String id);
+	int deleteDoc(String indexName, String id);
 	
 	/**
 	 * 修改一篇文档
@@ -57,7 +57,7 @@ public interface IndexService {
 	 * @param indexType
 	 * @param doc
 	 */
-	void updateDoc(String indexName, String indexType, Map<String, Object> doc);
+	void updateDoc(String indexName, String id, Map<String, Object> doc);
 	/**
 	 * 判断一个索引是否存在
 	 * @param indexname

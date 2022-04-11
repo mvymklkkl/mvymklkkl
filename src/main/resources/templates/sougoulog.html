@@ -663,7 +663,7 @@ em {
   		var json={"id":$("#id").val(),"visittime":$("#visittime").val(),"userid":$("#userid").val(),"keywords":$("#keywords").val()
   				  ,"rank":$("#rank").val(),"clicknum":$("#clicknum").val(),"url":$("#url").val()};
 		   $.ajax({  
-            url : "/indexDoc/sougoulog/_doc",  
+            url : "/indexDoc/sougoulog/"+$("#id").val(),  
             type : "POST",  
             data : JSON.stringify(json), //转JSON字符串  
             dataType: 'json',  

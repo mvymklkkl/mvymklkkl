@@ -38,8 +38,8 @@ public class IndexServiceImpl implements IndexService {
 	RestHighLevelClient client;
 	
 	@Override
-	public void indexDoc(String indexName, String indexType, Map<String, Object> doc) {
-		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("key")).source(doc); 
+	public void indexDoc(String indexName, String id, Map<String, Object> doc) {
+		IndexRequest indexRequest = new IndexRequest(indexName).id(id).source(doc); 
 		try {
 		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
 		    System.out.println("新增成功" + response.toString());
@@ -55,15 +55,16 @@ public class IndexServiceImpl implements IndexService {
 	
 
 	@Override
-	public void indexDocs(String indexName, String indexType, List<Map<String, Object>> docs) {
+	public void indexDocs(String indexName, List<Map<String, Object>> docs) {
 		 try {
 	            if (null == docs || docs.size() <= 0) {
 	                return;
 	            }
 	            BulkRequest request = new BulkRequest();
 	            for (Map<String, Object> doc : docs) {
-	                request.add(new IndexRequest(indexName, indexType, (String)doc.get("key"))
-	                            .source(doc));
+	                request.add(
+	                		new IndexRequest(indexName).id((String)doc.get("key")).source(doc)
+	                            );
 	            }
 	            BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
 	            if (bulkResponse != null) {
@@ -89,9 +90,9 @@ public class IndexServiceImpl implements IndexService {
 	}
 
 	@Override
-	public int deleteDoc(String indexName, String indexType, String id) {
+	public int deleteDoc(String indexName, String id) {
 		DeleteResponse deleteResponse = null;
-		DeleteRequest request = new DeleteRequest(indexName, indexType, id);
+		DeleteRequest request = new DeleteRequest(indexName, id);
 		try {
 			deleteResponse = client.delete(request, RequestOptions.DEFAULT);
 			System.out.println("删除成功" + deleteResponse.toString());
@@ -137,8 +138,8 @@ public class IndexServiceImpl implements IndexService {
 	}
 	
 	@Override
-	public void updateDoc(String indexName, String indexType, Map<String, Object> doc) {
-		UpdateRequest request = new UpdateRequest(indexName, indexType, (String) doc.get("key")).doc(doc);
+	public void updateDoc(String indexName, String id, Map<String, Object> doc) {
+		UpdateRequest request = new UpdateRequest(indexName, id).doc(doc);
 		request.docAsUpsert(true);
 		try {
 			UpdateResponse updateResponse = client.update(request, RequestOptions.DEFAULT);
@@ -162,8 +163,8 @@ public class IndexServiceImpl implements IndexService {
 
 
 	@Override
-	public void indexDocWithRouting(String indexName, String indexType, String route, Map<String, Object> doc) {
-		IndexRequest indexRequest = new IndexRequest(indexName, indexType, (String)doc.get("key")).source(doc); 
+	public void indexDocWithRouting(String indexName, String route, Map<String, Object> doc) {
+		IndexRequest indexRequest = new IndexRequest(indexName).id((String)doc.get("key")).source(doc); 
 		indexRequest.routing(route);
 		try {
 		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
@@ -180,7 +181,7 @@ public class IndexServiceImpl implements IndexService {
 
 
 	@Override
-	public void indexDocsWithRouting(String indexName, String indexType, List<Map<String, Object>> docs) {
+	public void indexDocsWithRouting(String indexName, List<Map<String, Object>> docs) {
 		try {
             if (null == docs || docs.size() <= 0) {
                 return;
@@ -189,7 +190,7 @@ public class IndexServiceImpl implements IndexService {
             for (Map<String, Object> doc : docs) {
             	HashMap<String, Object> join = (HashMap<String, Object>)doc.get("joinkey");
             	String route = (String)join.get("parent");
-                request.add(new IndexRequest(indexName, indexType, (String)doc.get("key"))
+                request.add(new IndexRequest(indexName).id((String)doc.get("key"))
                             .source(doc).routing(route));
             }
             BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
