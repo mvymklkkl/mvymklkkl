@@ -743,7 +743,7 @@ em {
 	    }).end().find(".command-delete").on("click", function(e)
 		    {
 		        $.ajax({  
-			        url : "/indexDocs/sougoulog/_doc/"+$(this).data("row-id"),  
+			        url : "/indexDocs/sougoulog/"+$(this).data("row-id"),  
 			        type : "DELETE",  
 			        success : function(result) { 
 			        	alert("删除成功");

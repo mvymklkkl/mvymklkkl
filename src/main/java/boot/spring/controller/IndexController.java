@@ -60,10 +60,10 @@ public class IndexController {
 	@RequestMapping(value="/indexSougoulog", method = RequestMethod.POST)
 	@ResponseBody
 	MSG indexDoc(@RequestBody Sougoulog log){
-		IndexRequest indexRequest = new IndexRequest("sougoulog", "_doc", String.valueOf(log.getId())); 
+		IndexRequest indexRequest = new IndexRequest("sougoulog").id(String.valueOf(log.getId())); 
 		indexRequest.source(JSON.toJSONString(log), XContentType.JSON);
 		try {
-		    IndexResponse response = client.index(indexRequest, RequestOptions.DEFAULT);
+		    client.index(indexRequest, RequestOptions.DEFAULT);
 		} catch(ElasticsearchException e ) {
 		    if (e.status() == RestStatus.CONFLICT) {
 		    	System.out.println("写入索引产生冲突"+e.getDetailedMessage());
@@ -393,10 +393,10 @@ public class IndexController {
 	}		
 	
 	@ApiOperation("向索引添加一个文档")
-	@RequestMapping(value="/indexDoc/{indexname}/{indextype}",method = RequestMethod.POST)
+	@RequestMapping(value="/indexDoc/{indexname}/{id}",method = RequestMethod.POST)
 	@ResponseBody
-	MSG indexDoc(@PathVariable String indexname, @PathVariable String indextype, @RequestBody Map<String, Object> jsonMap){
-		indexService.indexDoc(indexname, indextype, jsonMap);
+	MSG indexDoc(@PathVariable String indexname, @PathVariable String id, @RequestBody Map<String, Object> jsonMap){
+		indexService.indexDoc(indexname, id, jsonMap);
 		return new MSG("index success");
 	}
 	
@@ -409,9 +409,9 @@ public class IndexController {
 	}	
 	
 	@ApiOperation("删除一个索引中的文档")
-	@RequestMapping(value="/indexDocs/{indexname}/{indextype}/{id}",method = RequestMethod.DELETE)
+	@RequestMapping(value="/indexDocs/{indexname}/{id}",method = RequestMethod.DELETE)
 	@ResponseBody
-	MSG indexDocs(@PathVariable String indexname, @PathVariable String indextype, @PathVariable String id){
+	MSG indexDocs(@PathVariable String indexname, @PathVariable String id){
 		int result = indexService.deleteDoc(indexname, id);
 		if ( result < 0 ) {
 			return new MSG("index delete failed");
