@@ -29,7 +29,10 @@ import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+
 import boot.spring.elastic.service.IndexService;
+import boot.spring.po.Sougoulog;
 
 
 @Service
@@ -214,5 +217,42 @@ public class IndexServiceImpl implements IndexService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+
+
+
+	@Override
+	public void indexJsonDocs(String indexName, List<Sougoulog> docs) {
+		 try {
+	            if (null == docs || docs.size() <= 0) {
+	                return;
+	            }
+	            BulkRequest request = new BulkRequest();
+	            for (Sougoulog doc : docs) {
+	                request.add(
+	                		new IndexRequest(indexName).id(String.valueOf(doc.getId())).source(JSON.toJSONString(doc), XContentType.JSON)
+	                            );
+	            }
+	            BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
+	            if (bulkResponse != null) {
+	                for (BulkItemResponse bulkItemResponse : bulkResponse) {
+	                    DocWriteResponse itemResponse = bulkItemResponse.getResponse();
+
+	                    if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.INDEX
+	                            || bulkItemResponse.getOpType() == DocWriteRequest.OpType.CREATE) {
+	                        IndexResponse indexResponse = (IndexResponse) itemResponse;
+	                        System.out.println("新增成功" + indexResponse.toString());
+	                    } else if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.UPDATE) {
+	                        UpdateResponse updateResponse = (UpdateResponse) itemResponse;
+	                        System.out.println("修改成功" + updateResponse.toString());
+	                    } else if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.DELETE) {
+	                        DeleteResponse deleteResponse = (DeleteResponse) itemResponse;
+	                        System.out.println("删除成功" + deleteResponse.toString());
+	                    }
+	                }
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 	}
 }

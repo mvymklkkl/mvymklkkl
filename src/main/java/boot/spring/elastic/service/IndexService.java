@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
+import boot.spring.po.Sougoulog;
+
 public interface IndexService {
 	/**
 	 * 创建索引映射
@@ -19,6 +21,7 @@ public interface IndexService {
 	 * @param doc
 	 */
 	void indexDoc(String indexName, String id, Map<String, Object> doc);
+	
 	/**
 	 * 带路由索引一篇文档
 	 * @param indexName
@@ -33,6 +36,8 @@ public interface IndexService {
 	 * @param docs
 	 */
 	void indexDocs(String indexName, List<Map<String, Object>> docs);
+	
+	void indexJsonDocs(String indexName, List<Sougoulog> docs);
 	
 	/**
 	 * 带路由索引一组文档

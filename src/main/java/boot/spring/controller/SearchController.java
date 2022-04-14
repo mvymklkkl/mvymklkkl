@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import boot.spring.elastic.service.AggsService;
 import boot.spring.elastic.service.SearchService;
 import boot.spring.pagemodel.DataGrid;
 import boot.spring.pagemodel.DataTable;
@@ -43,12 +42,8 @@ import boot.spring.pagemodel.ElasticSearchRequest;
 import boot.spring.pagemodel.FilterCommand;
 import boot.spring.pagemodel.GeoDistance;
 import boot.spring.pagemodel.JoinParams;
-import boot.spring.pagemodel.MSG;
 import boot.spring.pagemodel.QueryCommand;
-import boot.spring.pagemodel.RangeQuery;
 import boot.spring.pagemodel.ResultData;
-import boot.spring.po.City;
-import boot.spring.po.Country;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -421,4 +416,6 @@ public class SearchController {
 			e.printStackTrace();
 		}
 	}
+    
+   
 }

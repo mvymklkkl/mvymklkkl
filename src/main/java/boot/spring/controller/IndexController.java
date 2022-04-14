@@ -74,6 +74,14 @@ public class IndexController {
 		return new MSG("index success");
 	}		
 	
+	@ApiOperation("索引一组json日志文档")
+	@RequestMapping(value="/indexJsonSougoulog", method = RequestMethod.POST)
+	@ResponseBody
+	MSG indexJsonDoc(@RequestBody List<Sougoulog> log){
+		indexService.indexJsonDocs("sougoulog", log);
+		return new MSG("index success");
+	}	
+	
 	/**
 	 * 创建索引并设置字段类型
 	 * @param indexname
@@ -285,32 +293,31 @@ public class IndexController {
 		BufferedReader br = new BufferedReader(new FileReader(ResourceUtils.getFile("classpath:SougouQ.log")));
 		String s;
 		int i = 1;
-		List<Map<String, Object>> docs = new ArrayList<>();
+		List<Sougoulog> jsonDocs = new ArrayList<>();
 		while ((s = br.readLine()) != null) {
 			String[] words = s.split(" |\t");
 	        System.out.println(words[0]+" "+words[1]+words[2]+words[5]);
-	        HashMap<String, Object> doc = new HashMap<String, Object>();
-	        doc.put("key", String.valueOf(i));
-	        doc.put("id", i);
-	        doc.put("visittime", words[0]);
-	        doc.put("userid", words[1]);
-	        doc.put("keywords", words[2]);
-	        doc.put("rank", Integer.parseInt(words[3]));
-	        doc.put("clicknum", Integer.parseInt(words[4]));
-	        doc.put("url", words[5]);
-	        docs.add(doc);
+	        Sougoulog log = new Sougoulog();
+	        log.setId(i);
+	        log.setVisittime(words[0]);
+	        log.setUserid(words[1]);
+	        log.setKeywords(words[2]);
+	        log.setRank(Integer.parseInt(words[3]));
+	        log.setClicknum(Integer.parseInt(words[4]));
+	        log.setUrl(words[5]);
+	        jsonDocs.add(log);
 			i++;
 		}
 		int start = 0;
-		while (start < docs.size()) {
+		while (start < jsonDocs.size()) {
 			int end = 0;
-			if (start + 1000 <= docs.size()) {
+			if (start + 1000 <= jsonDocs.size()) {
 				end = start + 1000;
 			} else {
-				end = docs.size();
+				end = jsonDocs.size();
 			}
-			List<Map<String, Object>> sublist = docs.subList(start, end);
-			indexService.indexDocs("sougoulog", sublist);
+			List<Sougoulog> sublist = jsonDocs.subList(start, end);
+			indexService.indexJsonDocs("sougoulog", sublist);
 			start += 1000;
 		}
 		br.close();
