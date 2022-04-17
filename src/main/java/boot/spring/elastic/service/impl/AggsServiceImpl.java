@@ -175,7 +175,7 @@ public class AggsServiceImpl implements AggsService {
             DateHistogramAggregationBuilder dateHistogramAggregationBuilder = AggregationBuilders
                     .dateHistogram("aggsName")
                     .field(dateField)
-                    .dateHistogramInterval(DateHistogramInterval.seconds(step))
+                    .fixedInterval(DateHistogramInterval.seconds(step))
                     // .extendedBounds(new ExtendedBounds("2020-09-01 00:00:00", "2020-09-02 05:00:00")
                     .minDocCount(0L);
             searchSourceBuilder.query(queryBuilder).aggregation(dateHistogramAggregationBuilder);
