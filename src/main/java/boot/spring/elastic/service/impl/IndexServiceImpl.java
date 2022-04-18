@@ -152,11 +152,7 @@ public class IndexServiceImpl implements IndexService {
 				System.out.println("insert success, version is " + version);
 			} else if (updateResponse.getResult() == DocWriteResponse.Result.UPDATED) {
 				System.out.println("update success, version is " + version);
-			} else if (updateResponse.getResult() == DocWriteResponse.Result.DELETED) {
-			    
-			} else if (updateResponse.getResult() == DocWriteResponse.Result.NOOP) {
-			    
-			}
+			} 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
