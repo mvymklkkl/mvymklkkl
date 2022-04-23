@@ -123,5 +123,6 @@ Spring boot整合elastic search 7.9.1实现全文检索。主要包含以下特�
 39. 并发控制：Java多线程编程实例
 40. 并发控制：使用netty实现高性能NIO通信 
 ### 视频教程
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0115/081947_79c77375_1110335.png "DK`7PGB}KM0NHP}13]K33WP.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0115/082443_6e3b60c8_1110335.png "封面.png")
+
 <a href="https://www.roncoo.com/view/1303618857169457154" target="_blank">在线观看地址（含源码和PPT）</a>
