@@ -98,7 +98,7 @@ Spring boot整合elastic search 7.9.1实现全文检索。主要包含以下特�
 24. Spring boot整合Apache dubbo v2.7.5实现分布式服务治理（SOA架构） ![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题") 
 >  包含组件Spring boot v2.2.2+Dubbo v2.7.5+Nacos v1.1.1
 <a href="https://images.gitee.com/uploads/images/2020/0114/084731_fd0b7a82_1110335.gif" target="_blank">效果图</a>
-25. 使用Spring Cloud Alibaba v2.1.0实现微服务架构（MSA架构）![输入图片说明](https://img.shields.io/badge/-%E6%8B%9B%E7%89%8C-yellow.svg)   
+25. 使用Spring Cloud Alibaba v2.2.7实现微服务架构（MSA架构）![输入图片说明](https://img.shields.io/badge/-%E6%8B%9B%E7%89%8C-yellow.svg)   
 >  包含组件Nacos+Feign+Gateway+Ribbon+Sentinel+Zipkin
 <a href="https://images.gitee.com/uploads/images/2020/0106/201827_ac61db63_1110335.gif" target="_blank">效果图</a>
 26. 使用jenkins+centos+git+maven搭建持续集成环境自动化部署分布式服务 
@@ -114,10 +114,10 @@ Spring boot整合elastic search 7.9.1实现全文检索。主要包含以下特�
 #### 特别篇：分布式事务和并发控制
 33. 基于可靠消息最终一致性实现分布式事务（activeMQ）
 34. Spring boot dubbo整合seata实现分布式事务![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题")
-> 包含组件nacos v1.1.0 + seata v0.7.1 +spring boot dubbo v2.7.5
+> 包含组件nacos v2.0.2 + seata v1.4.2 +spring boot dubbo v2.7.5
 <a href="https://images.gitee.com/uploads/images/2020/0119/112233_62a33a77_1110335.gif" target="_blank">效果图</a>
-35. Spring cloud alibaba v2.1.0整合seata实现分布式事务 ![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题")
-> 包含组件nacos v1.1.0 + seata v0.7.1 +spring cloud alibaba v2.1.0
+35. Spring cloud alibaba v2.2.7整合seata实现分布式事务 ![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题")
+> 包含组件nacos v2.0.2 + seata v1.4.2 +spring cloud alibaba v2.2.7
 <a href="https://images.gitee.com/uploads/images/2020/0119/134408_ee14a016_1110335.gif" target="_blank">效果图</a>
 36. 并发控制：数据库锁机制和事务隔离级别的实现![输入图片说明](https://img.shields.io/badge/-%E7%B2%BE%E5%93%81-orange.svg "在这里输入图片标题") 
 37. 并发控制：使用redission实现分布式锁 
