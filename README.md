@@ -124,9 +124,3 @@ Spring boot整合elastic search 7.9.1实现全文检索。主要包含以下特�
 38. 并发控制：使用zookeeper实现分布式锁 
 39. 并发控制：Java多线程编程实例
 40. 并发控制：使用netty实现高性能NIO通信 
-### 视频教程
-![输入图片说明](%E5%B0%81%E9%9D%A2.png)
-<a href="https://www.roncoo.com/view/1551481849552183297" target="_blank">RuoYi-activiti开发指南</a>
-
-### 关注微信公众号获取更多技术文章和源码
-![输入图片说明](https://images.gitee.com/uploads/images/2021/1022/183316_f03b4f99_1110335.jpeg "qrcode_for_gh_4c2318bb0f7f_258.jpg")
